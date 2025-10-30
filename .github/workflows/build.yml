@@ -34,6 +34,57 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/pom.xml', '**/package.json') }}
           restore-keys: |
             ${{ runner.os}}-node_modules-
+
+      - name: Download PIT history
+        uses: actions/download-artifact@v4
+        with:
+          name: pit-history
+          path: .
+        continue-on-error: true
+
+      - name: Download mutation score
+        uses: actions/download-artifact@v4
+        with:
+          name: pit-score
+          path: .
+        continue-on-error: true
+
+      - name: Build ${{ matrix.java-version }}
+        run: mvn -B clean test
+
+      - name: Run PIT (incremental)
+        run: mvn -q org.pitest:pitest-maven:mutationCoverage
+
+      - name: Extract PIT score
+        run: |
+          file=$(find . -name "mutation.xml" | head -n 1)
+          new=$(xmllint --xpath "string(//mutationStats/@mutationCoverage)" "$file")
+          echo "$new" > new-score.txt
+          if [ -f old-score.txt ]; then
+            old=$(cat old-score.txt)
+            echo "Previous: $old"
+            echo "Current: $new"
+            if (( $(echo "$new < $old" | bc -l )): then
+              echo "Mutation score decreased"
+              exit 1
+            fi
+          fi
+          mc new-score.txt old-score.txt
+
+      - name: Upload PIT history
+        uses: actions/upload-artifact@v4
+        with:
+          name: pit-history
+          path: pitest-history.bin
+        if: always()
+
+      - name: Upload PIT score
+        uses: actions/upload-artifact@v4
+        with:
+          name: pit-score
+          path: old-score.txt
+        if: always()
+
       - name: Build ${{ matrix.java-version }}
         run: mvn -B clean test
 
