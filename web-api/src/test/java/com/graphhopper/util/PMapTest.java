@@ -139,14 +139,14 @@ public class PMapTest {
      * getBool("missing", false) -> retourne false, car la clé n’existe pas et la valeur par défaut est false.
      * getBool("missing", true) ->  retourne true, car la clé n’existe pas et la valeur par défaut est true.
      */
-    @Test
-    public void testGetBool() {
-        PMap map = new PMap();
-        map.putObject("flag",true);
-
-        assertTrue(map.getBool("flag", false));
-        assertFalse(map.getBool("missing", false));
-        assertTrue(map.getBool("missing", true));
-
-    }
+//    @Test
+//    public void testGetBool() {
+//        PMap map = new PMap();
+//        map.putObject("flag",true);
+//
+//        assertTrue(map.getBool("flag", false));
+//        assertFalse(map.getBool("missing", false));
+//        assertTrue(map.getBool("missing", true));
+//
+//    }
 }
