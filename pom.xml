@@ -311,10 +311,8 @@
                     </jvmArgs>
 
                     <threads>1</threads>
-
                     <timeoutConstant>6000</timeoutConstant>
                     <timeoutFactor>1.5</timeoutFactor>
-
 
                     <targetClasses>
                         <param>com.graphhopper.*</param>
@@ -324,6 +322,11 @@
                     </targetTests>
 
                     <reportsDirectory>${project.build.directory}/pit-reports</reportsDirectory>
+
+                    <historyInputFile>${project.basedir}/pitest-history.bin</historyInputFile>
+                    <historyOutputFile>${project.basedir}/pitest-history.bin</historyOutputFile>
+                    <incrementalAnalysis>true</incrementalAnalysis>
+                    <mutationThreshold>-1</mutationThreshold>
 
                     <pluginConfiguration>
                         <param>junit5Plugin</param>
@@ -337,6 +340,7 @@
                     </dependency>
                 </dependencies>
             </plugin>
+
 
         </plugins>
     </build>
