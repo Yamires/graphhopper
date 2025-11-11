@@ -112,6 +112,7 @@ jobs:
         with:
           name: pit-scores
           path: pit-score-*.txt
+          if-no-files-found: ignore
 
 
       - name: Upload PIT reports
