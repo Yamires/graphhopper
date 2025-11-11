@@ -100,7 +100,7 @@ jobs:
           total=0
           count=0
           echo "=== PIT Mutation Coverage Summary ==="
-          for file in $(find . -name "mutation.xml"); do
+          for file in $(find . -name "mutations.xml"); do
             module=$(echo "$file" | cut -d'/' -f2)
             coverage=$(xmllint --xpath "string(//mutationStats/@mutationCoverage)" "$file")
             echo " $module: $coverage%"
@@ -111,14 +111,14 @@ jobs:
             avg=$(echo "scale=2; $total / $count" | bc -l)
             echo "Average coverage: $avg%"
           else
-            echo "No mutation.xml files found."
+            echo "No mutations.xml files found."
           fi
 
       - name: Enforce PIT mutation coverage threshold
         run: |
           echo "=== Checking mutation score regression ==="
           failed=false
-          for file in $(find . -name "mutation.xml"); do
+          for file in $(find . -name "mutations.xml"); do
             module=$(echo "$file" | cut -d'/' -f2)
             coverage=$(xmllint --xpath "string(//mutationStats/@mutationCoverage)" "$file")
             echo "$module: $coverage%"
