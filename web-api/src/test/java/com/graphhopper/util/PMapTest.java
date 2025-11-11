@@ -60,28 +60,28 @@ public class PMapTest {
         assertEquals(123.45, subject.getDouble("foo", 0), 1e-4);
     }
 
-//    @Test
-//    public void hasReturnsCorrectResult() {
-//        PMap subject = new PMap("foo=123.45|bar=56.78");
-//
-//        assertTrue(subject.has("foo"));
-//        assertTrue(subject.has("bar"));
-//        assertFalse(subject.has("baz"));
-//    }
-//
-//    @Test
-//    public void nameAndProperties() {
-//        PMap pMap = new PMap("name|x=3|y=2");
-//        assertEquals(2, pMap.toMap().size());
-//        assertEquals(3, pMap.getInt("x", -1));
-//        assertEquals(2, pMap.getInt("y", -1));
-//    }
+    @Test
+    public void hasReturnsCorrectResult() {
+        PMap subject = new PMap("foo=123.45|bar=56.78");
 
-//    @Test
-//    public void empty() {
-//        assertTrue(new PMap("").toMap().isEmpty());
-//        assertTrue(new PMap("name").toMap().isEmpty());
-//    }
+        assertTrue(subject.has("foo"));
+        assertTrue(subject.has("bar"));
+        assertFalse(subject.has("baz"));
+    }
+
+    @Test
+    public void nameAndProperties() {
+        PMap pMap = new PMap("name|x=3|y=2");
+        assertEquals(2, pMap.toMap().size());
+        assertEquals(3, pMap.getInt("x", -1));
+        assertEquals(2, pMap.getInt("y", -1));
+    }
+
+    @Test
+    public void empty() {
+        assertTrue(new PMap("").toMap().isEmpty());
+        assertTrue(new PMap("name").toMap().isEmpty());
+    }
     /**
      * Nom du test : testReadValidArgs
      *
@@ -97,12 +97,12 @@ public class PMapTest {
      * Après parsing, la clé "foo" doit renvoyer 1 et la clé "bar" doit renvoyer 2 via getInt().
      * L’oracle consiste à comparer ces résultats avec les valeurs attendues.
      */
-//    @Test
-//    public void testReadValidArgs() {
-//        PMap map = PMap.read(new String[]{"foo=1", "bar=2"});
-//        assertEquals(1, map.getInt("foo", 0));
-//        assertEquals(2, map.getInt("bar", 0));
-//    }
+    @Test
+    public void testReadValidArgs() {
+        PMap map = PMap.read(new String[]{"foo=1", "bar=2"});
+        assertEquals(1, map.getInt("foo", 0));
+        assertEquals(2, map.getInt("bar", 0));
+    }
     /**
      * Nom du test : testReadDuplicateKeyThrows
      *
@@ -117,10 +117,10 @@ public class PMapTest {
      * Le code de read() lève une IllegalArgumentException lorsqu’une clé est ajoutée en double.
      * L’oracle est donc la vérification que cette exception est bien levée dans ce cas.
      */
-//    @Test
-//    public void testReadDuplicateKeyThrows() {
-//        assertThrows(IllegalArgumentException.class, () -> PMap.read(new String[]{"foo=1", "foo=2"}));
-//    }
+    @Test
+    public void testReadDuplicateKeyThrows() {
+        assertThrows(IllegalArgumentException.class, () -> PMap.read(new String[]{"foo=1", "foo=2"}));
+    }
 
     /**
      * Nom du test : testGetBool
@@ -139,14 +139,14 @@ public class PMapTest {
      * getBool("missing", false) -> retourne false, car la clé n’existe pas et la valeur par défaut est false.
      * getBool("missing", true) ->  retourne true, car la clé n’existe pas et la valeur par défaut est true.
      */
-//    @Test
-//    public void testGetBool() {
-//        PMap map = new PMap();
-//        map.putObject("flag",true);
-//
-//        assertTrue(map.getBool("flag", false));
-//        assertFalse(map.getBool("missing", false));
-//        assertTrue(map.getBool("missing", true));
-//
-//    }
+    @Test
+    public void testGetBool() {
+        PMap map = new PMap();
+        map.putObject("flag",true);
+
+        assertTrue(map.getBool("flag", false));
+        assertFalse(map.getBool("missing", false));
+        assertTrue(map.getBool("missing", true));
+
+    }
 }

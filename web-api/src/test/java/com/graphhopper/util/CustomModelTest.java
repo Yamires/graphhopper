@@ -47,34 +47,34 @@ public class CustomModelTest {
         assertEquals(1, car.getPriority().size());
     }
 
-//    @Test
-//    public void testMergeElse() {
-//        CustomModel truck = new CustomModel();
-//        truck.addToPriority(If("max_width < 3", MULTIPLY, "0"));
-//
-//        CustomModel car = new CustomModel();
-//        car.addToPriority(If("max_width < 2", MULTIPLY, "0"));
-//
-//        CustomModel merged = CustomModel.merge(truck, car);
-//        assertEquals(2, merged.getPriority().size());
-//        assertEquals(1, car.getPriority().size());
-//    }
-//
-//    @Test
-//    public void testMergeEmptyModel() {
-//        CustomModel emptyCar = new CustomModel();
-//        CustomModel car = new CustomModel();
-//        car.addToPriority(If("road_class==primary", MULTIPLY, "0.5"));
-//        car.addToPriority(ElseIf("road_class==tertiary", MULTIPLY, "0.8"));
-//
-//        Iterator<Statement> iter = CustomModel.merge(emptyCar, car).getPriority().iterator();
-//        assertEquals("0.5", iter.next().value());
-//        assertEquals("0.8", iter.next().value());
-//
-//        iter = CustomModel.merge(car, emptyCar).getPriority().iterator();
-//        assertEquals("0.5", iter.next().value());
-//        assertEquals("0.8", iter.next().value());
-//    }
+    @Test
+    public void testMergeElse() {
+        CustomModel truck = new CustomModel();
+        truck.addToPriority(If("max_width < 3", MULTIPLY, "0"));
+
+        CustomModel car = new CustomModel();
+        car.addToPriority(If("max_width < 2", MULTIPLY, "0"));
+
+        CustomModel merged = CustomModel.merge(truck, car);
+        assertEquals(2, merged.getPriority().size());
+        assertEquals(1, car.getPriority().size());
+    }
+
+    @Test
+    public void testMergeEmptyModel() {
+        CustomModel emptyCar = new CustomModel();
+        CustomModel car = new CustomModel();
+        car.addToPriority(If("road_class==primary", MULTIPLY, "0.5"));
+        car.addToPriority(ElseIf("road_class==tertiary", MULTIPLY, "0.8"));
+
+        Iterator<Statement> iter = CustomModel.merge(emptyCar, car).getPriority().iterator();
+        assertEquals("0.5", iter.next().value());
+        assertEquals("0.8", iter.next().value());
+
+        iter = CustomModel.merge(car, emptyCar).getPriority().iterator();
+        assertEquals("0.5", iter.next().value());
+        assertEquals("0.8", iter.next().value());
+    }
     /**
      * Test testSetAndGetDistanceInfluence
      *
@@ -90,19 +90,19 @@ public class CustomModelTest {
      * getDistanceInfluence() retourne null par défaut.
      * Après appel à setDistanceInfluence(), getDistanceInfluence() retourne la valeur donnée.
      */
-//    @Test
-//    public void testSetAndGetDistanceInfluence() {
-//        CustomModel car = new CustomModel();
-//        assertNull(car.getDistanceInfluence());
-//
-//        CustomModel car2 = car.setDistanceInfluence(6.5);
-//        assertSame(car, car2);
-//        assertEquals(6.5, car.getDistanceInfluence(), 0.0001);
-//
-//        car.setDistanceInfluence(2.5);
-//        assertEquals(2.5, car.getDistanceInfluence(), 0.0001);
-//
-//        car.setDistanceInfluence(4.0);
-//        assertEquals(4.0, car.getDistanceInfluence(), 0.0001);
-//    }
+    @Test
+    public void testSetAndGetDistanceInfluence() {
+        CustomModel car = new CustomModel();
+        assertNull(car.getDistanceInfluence());
+
+        CustomModel car2 = car.setDistanceInfluence(6.5);
+        assertSame(car, car2);
+        assertEquals(6.5, car.getDistanceInfluence(), 0.0001);
+
+        car.setDistanceInfluence(2.5);
+        assertEquals(2.5, car.getDistanceInfluence(), 0.0001);
+
+        car.setDistanceInfluence(4.0);
+        assertEquals(4.0, car.getDistanceInfluence(), 0.0001);
+    }
 }
