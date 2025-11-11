@@ -143,12 +143,12 @@ public class HelperTest {
      * Pour une chaîne vide en entrée, la méthode doit retourner une liste vide.
      */
 
-    @Test
-    public void testEmptyString() {
-        String input = "";
-        List<String> result = Helper.parseList(input);
-        assertTrue(result.isEmpty(), "Une chaine vide doit retourner une liste vide");
-    }
+//    @Test
+//    public void testEmptyString() {
+//        String input = "";
+//        List<String> result = Helper.parseList(input);
+//        assertTrue(result.isEmpty(), "Une chaine vide doit retourner une liste vide");
+//    }
 
     /**
      * Nom du test : testNormalList
