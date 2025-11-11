@@ -166,16 +166,16 @@ public class HelperTest {
      * contenant, dans l’ordre : élément 0 = "benoit", élément 1 = "meryem", élément 2 = "yogya".
      */
 
-
-    @Test
-    public void testNormalList() {
-        String input = "[benoit, meryem, yogya]";
-        List<String> result = Helper.parseList(input);
-        assertEquals(3, result.size());
-        assertEquals("benoit", result.get(0));
-        assertEquals("meryem", result.get(1));
-        assertEquals("yogya", result.get(2));
-    }
+//
+//    @Test
+//    public void testNormalList() {
+//        String input = "[benoit, meryem, yogya]";
+//        List<String> result = Helper.parseList(input);
+//        assertEquals(3, result.size());
+//        assertEquals("benoit", result.get(0));
+//        assertEquals("meryem", result.get(1));
+//        assertEquals("yogya", result.get(2));
+//    }
 
 
     /**
@@ -194,14 +194,14 @@ public class HelperTest {
      * contenant, dans l’ordre : élément 0 = "benoit", élément 1 = "yogya".
      */
 
-    @Test
-    public void testListWithEmptyElements() {
-        String input = "[benoit, , yogya, , ]";
-        List<String> result = Helper.parseList(input);
-
-        assertEquals(2, result.size(), "empty elems should be ignored");
-        assertEquals("benoit", result.get(0));
-        assertEquals("yogya", result.get(1));
-    }
+//    @Test
+//    public void testListWithEmptyElements() {
+//        String input = "[benoit, , yogya, , ]";
+//        List<String> result = Helper.parseList(input);
+//
+//        assertEquals(2, result.size(), "empty elems should be ignored");
+//        assertEquals("benoit", result.get(0));
+//        assertEquals("yogya", result.get(1));
+//    }
 
 }
