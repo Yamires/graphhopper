@@ -47,23 +47,24 @@ jobs:
       - name: Install tools
         run: sudo apt-get update && sudo apt-get install -y bc libxml2-utils
 
-      - name: Restore PIT score cache
-        uses: actions/cache@v4
+      - name: Restore previous PIT scores
+        uses: actions/cache/restore@v4
         with:
           path: pit-scores-cache
-          key: pit-score-cache-${{ github.ref_name }}
+          key: pit-scores-${{ github.ref_name }}-${{ github.sha }}
+          restore-keys: |
+            pit-scores-${{ github.ref_name }}-
+            pit-scores-main-
 
-      - name: Download previous PIT scores
-        uses: actions/download-artifact@v4
-        with:
-          name: pit-scores
-          path: .
-        continue-on-error: true
+      - name: Copy cached scores to working directory
+        run: |
+          if [ -d pit-scores-cache ]; then
+            cp pit-scores-cache/*.txt . 2>/dev/null || echo "No cached scores found (first run?)"
+          fi
 
       - name: Build all modules
         run: mvn -B clean install -DskipTests -Djacoco.skip=true
 
-      # 🔍 Détection des modules Maven modifiés
       - name: Detect changed Maven modules
         id: changed
         uses: tj-actions/changed-files@v44
@@ -87,7 +88,7 @@ jobs:
             echo "modules=$MODULES" >> $GITHUB_OUTPUT
           fi
 
-      - name: Run PIT mutation testing
+      - name: Run PIT mutation testing (selective)
         if: steps.modules.outputs.modules != ''
         run: |
           mvn -B org.pitest:pitest-maven:mutationCoverage \
@@ -98,7 +99,7 @@ jobs:
             -DoutputFormats=XML,HTML \
             -DtimestampedReports=false
 
-      - name: Run PIT (full fallback)
+      - name: Run PIT mutation testing (full)
         if: steps.modules.outputs.modules == ''
         run: |
           mvn -B org.pitest:pitest-maven:mutationCoverage \
@@ -108,105 +109,90 @@ jobs:
             -DoutputFormats=XML,HTML \
             -DtimestampedReports=false
 
-      - name: Extract PIT score
-        if: matrix.java-version == '17'
-        run: |
-          file=$(find . -name "mutations.xml" | head -n 1)
-          if [ -z "$file" ]; then
-            echo "No mutations.xml found."
-            exit 1
-          fi
-
-          total=$(xmllint --xpath "count(//mutation)" "$file")
-          killed=$(xmllint --xpath "count(//mutation[@detected='true'])" "$file")
-
-          if [ "$total" -eq 0 ]; then
-            echo "No mutations found."
-            exit 1
-          fi
-
-          new=$(echo "scale=2; 100 * $killed / $total" | bc -l)
-          echo "Current mutation coverage: $new%"
-          echo "$new" > new-score.txt
-
-          if [ -f old-score.txt ]; then
-            old=$(cat old-score.txt)
-            echo "Previous: $old%"
-            if (( $(echo "$new < $old" | bc -l) )); then
-              echo "Mutation score decreased"
-              exit 1
-            fi
-          fi
-
-          mv new-score.txt old-score.txt
-
-
-      - name: Enforce PIT mutation coverage threshold
+      - name: Check mutation coverage regression
         run: |
           echo "=== Checking mutation score regression ==="
           failed=false
           
           for file in $(find . -name "mutations.xml"); do
-            module=$(echo "$file" | cut -d'/' -f2)
-        
-            # Compte les mutations totales et celles détectées
+            module=$(echo "$file" | sed 's|^\./||' | cut -d'/' -f1)
+          
+            # Compte les mutations totales et détectées
             total=$(xmllint --xpath "count(//mutation)" "$file")
             killed=$(xmllint --xpath "count(//mutation[@detected='true'])" "$file")
-        
+          
             if [ "$total" -eq 0 ]; then
-              echo "$module: No mutations found."
+              echo "⚠$module: No mutations found (skipped)"
               continue
             fi
           
             coverage=$(echo "scale=2; 100 * $killed / $total" | bc -l)
-            echo "$module: $coverage%"
+            echo "$module: ${coverage}% ($killed/$total mutations killed)"
           
+            # Vérifie si un score précédent existe
             old_file="pit-score-${module}.txt"
             if [ -f "$old_file" ]; then
               old=$(cat "$old_file")
-              echo "Previous: $old%"
+              echo "   Previous: ${old}%"
+          
               if (( $(echo "$coverage < $old" | bc -l) )); then
-                echo " Mutation score decreased for module $module"
+                echo "REGRESSION: Mutation score decreased for $module (${coverage}% < ${old}%)"
                 failed=true
+              else
+                echo "✅ OK: Score maintained or improved"
               fi
+            else
+              echo "   (No previous score - baseline set)"
             fi
           
+            # Sauvegarde le nouveau score
             echo "$coverage" > "$old_file"
           done
-            
+          
           if [ "$failed" = true ]; then
+            echo ""
             echo "Build failed: one or more modules lost mutation coverage."
             exit 1
           else
+            echo ""
             echo "All modules maintained or improved mutation coverage."
           fi
 
-
-      - name: Upload PIT scores
-        uses: actions/upload-artifact@v4
+      - name: Save PIT scores to cache
+        if: always()
+        uses: actions/cache/save@v4
         with:
-          name: pit-scores
-          path: pit-score-*.txt
-          if-no-files-found: ignore
+          path: pit-scores-cache
+          key: pit-scores-${{ github.ref_name }}-${{ github.sha }}
 
-      - name: Upload PIT reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: pit-reports
-          path: '**/target/pit-reports'
-          if-no-files-found: ignore
-
-      - name: Save PIT scores
+      - name: Prepare scores for caching
+        if: always()
         run: |
           mkdir -p pit-scores-cache
-          cp pit-score-*.txt pit-scores-cache/ || true
+          cp pit-score-*.txt pit-scores-cache/ 2>/dev/null || true
 
+      - name: Upload PIT reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pit-reports-java-${{ matrix.java-version }}
+          path: '**/target/pit-reports'
+          if-no-files-found: ignore
+          retention-days: 30
 
-      - name: Archive test reports
+      - name: Upload PIT scores
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pit-scores-java-${{ matrix.java-version }}
+          path: pit-score-*.txt
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Archive test reports on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: surefire-reports
+          name: surefire-reports-java-${{ matrix.java-version }}
           path: '**/target/surefire-reports'
           retention-days: 7
-
