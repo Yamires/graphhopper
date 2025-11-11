@@ -48,26 +48,14 @@ jobs:
       - name: Build all modules
         run: mvn -B clean install -DskipTests -Djacoco.skip=true
 
-      - name: Run PIT on each module
+      - name: Run PIT mutation testing
         run: |
-          declare -A MODULES
-          MODULES["core"]="com.graphhopper.*"
-          MODULES["map-matching"]="com.graphhopper.matching.*"
-          MODULES["navigation"]="com.graphhopper.navigation.*"
-          MODULES["reader-gtfs"]="com.graphhopper.reader.*"
-          MODULES["tools"]="com.graphhopper.tools.*"
-          MODULES["web"]="com.graphhopper.http.*"
-          MODULES["web-api"]="com.graphhopper.util.*"
-
-          for module in "${!MODULES[@]}"; do
-            echo "Running PIT for module: $module"
-            mvn -B -pl "$module" -am org.pitest:pitest-maven:mutationCoverage \
-              -DtargetClasses="${MODULES[$module]}" \
-              -DtargetTests='com.graphhopper.*Test' \
-              -DreportsDirectory="$module/target/pit-reports" \
-              -DtimestampedReports=false \
-              -DskipTests || true
-          done
+          mvn -B org.pitest:pitest-maven:mutationCoverage \
+            -DtargetClasses='com.graphhopper.*' \
+            -DtargetTests='com.graphhopper.*Test' \
+            -DreportsDirectory=target/pit-reports \
+            -DtimestampedReports=false \
+            -DskipTests
 
       - name: Summarize PIT results
         run: |
@@ -87,7 +75,7 @@ jobs:
           else
             echo "No mutation.xml files found."
           fi
-            # 📊 Compare PIT results to previous run
+
       - name: Enforce PIT mutation coverage threshold
         run: |
           echo "=== Checking mutation score regression ==="
@@ -119,7 +107,6 @@ jobs:
             echo "All modules maintained or improved mutation coverage."
           fi
 
-      # Upload PIT scores for next run
       - name: Upload PIT scores
         uses: actions/upload-artifact@v4
         with:
@@ -131,14 +118,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pit-reports
-          path: |
-            core/target/pit-reports
-            map-matching/target/pit-reports
-            navigation/target/pit-reports
-            reader-gtfs/target/pit-reports
-            tools/target/pit-reports
-            web/target/pit-reports
-            web-api/target/pit-reports
+          path: target/pit-reports
+          if-no-files-found: ignore
 
       - name: Archive test reports
         if: failure()
