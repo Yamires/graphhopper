@@ -82,6 +82,7 @@ jobs:
             -DtargetClasses='com.graphhopper.*' \
             -DtargetTests='com.graphhopper.*Test' \
             -DreportsDirectory=target/pit-reports \
+            -DoutputFormats=XML,HTML \
             -DtimestampedReports=false
 
       - name: Run PIT (full fallback)
@@ -91,6 +92,7 @@ jobs:
             -DtargetClasses='com.graphhopper.*' \
             -DtargetTests='com.graphhopper.*Test' \
             -DreportsDirectory=target/pit-reports \
+            -DoutputFormats=XML,HTML \
             -DtimestampedReports=false
 
       - name: Summarize PIT results
