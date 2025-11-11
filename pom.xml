@@ -204,7 +204,6 @@
                         <argLine>@{argLine} -Xmx190m -Xms190m -Duser.language=en</argLine>
                         <reuseForks>true</reuseForks>
                         <forkCount>1</forkCount>
-                        <useModulePath>false</useModulePath>
                     </configuration>
                 </plugin>
 
