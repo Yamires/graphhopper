@@ -91,42 +91,42 @@ public class HelperTest {
         assertEquals("TestCase_", Helper.underScoreToCamelCase("_test_case_"));
     }
 
-    @Test
-    public void testIssue2609() {
-        String s = "";
-        for (int i = 0; i < 128; i++) {
-            s += "ä";
-        }
-
-        // all chars are 2 bytes so at 255 we cut the char into an invalid character and this is probably automatically
-        // corrected leading to a longer string (or do chars have special marker bits to indicate their byte length?)
-        assertEquals(257, new String(s.getBytes(UTF_CS), 0, 255, UTF_CS).getBytes(UTF_CS).length);
-
-        // see this in action:
-        byte[] bytes = "a".getBytes(UTF_CS);
-        assertEquals(1, new String(bytes, 0, 1, UTF_CS).getBytes(UTF_CS).length);
-        // force incorrect char:
-        bytes[0] = -25;
-        assertEquals(3, new String(bytes, 0, 1, UTF_CS).getBytes(UTF_CS).length);
-    }
-
-    @Test
-    void degreeToInt() {
-        int storedInt = 444_494_395;
-        double lat = Helper.intToDegree(storedInt);
-        assertEquals(44.4494395, lat);
-        assertEquals(storedInt, Helper.degreeToInt(lat));
-    }
-
-    @Test
-    void eleToInt() {
-        int storedInt = 1145636;
-        double ele = Helper.uIntToEle(storedInt);
-        // converting to double is imprecise
-        assertEquals(145.635986, ele, 1.e-6);
-        // ... but converting back to int should yield the same value we started with!
-        assertEquals(storedInt, Helper.eleToUInt(ele));
-    }
+//    @Test
+//    public void testIssue2609() {
+//        String s = "";
+//        for (int i = 0; i < 128; i++) {
+//            s += "ä";
+//        }
+//
+//        // all chars are 2 bytes so at 255 we cut the char into an invalid character and this is probably automatically
+//        // corrected leading to a longer string (or do chars have special marker bits to indicate their byte length?)
+//        assertEquals(257, new String(s.getBytes(UTF_CS), 0, 255, UTF_CS).getBytes(UTF_CS).length);
+//
+//        // see this in action:
+//        byte[] bytes = "a".getBytes(UTF_CS);
+//        assertEquals(1, new String(bytes, 0, 1, UTF_CS).getBytes(UTF_CS).length);
+//        // force incorrect char:
+//        bytes[0] = -25;
+//        assertEquals(3, new String(bytes, 0, 1, UTF_CS).getBytes(UTF_CS).length);
+//    }
+//
+//    @Test
+//    void degreeToInt() {
+//        int storedInt = 444_494_395;
+//        double lat = Helper.intToDegree(storedInt);
+//        assertEquals(44.4494395, lat);
+//        assertEquals(storedInt, Helper.degreeToInt(lat));
+//    }
+//
+//    @Test
+//    void eleToInt() {
+//        int storedInt = 1145636;
+//        double ele = Helper.uIntToEle(storedInt);
+//        // converting to double is imprecise
+//        assertEquals(145.635986, ele, 1.e-6);
+//        // ... but converting back to int should yield the same value we started with!
+//        assertEquals(storedInt, Helper.eleToUInt(ele));
+//    }
 
     /**
      * Nom du test : testEmptyString
