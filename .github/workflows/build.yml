@@ -52,7 +52,12 @@ jobs:
 
       - name: Get changed modules for testing
         id: changed-modules
-        uses: vDka/gha-maven-list-changed-modules@v1
+        uses: vDso/gha-maven-list-changed-modules@v1
+        with:
+          base-ref: origin/master
+          include-tests: true
+          include-docs: false
+          debug: true
 
 
       - name: Run PIT mutation testing
