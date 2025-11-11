@@ -50,21 +50,44 @@ jobs:
       - name: Build all modules
         run: mvn -B clean install -DskipTests -Djacoco.skip=true
 
-      - name: Get changed modules for testing
-        id: changed-modules
-        uses: vDso/gha-maven-list-changed-modules@v1
+      # 🔍 Détection des modules Maven modifiés
+      - name: Detect changed Maven modules
+        id: changed
+        uses: tj-actions/changed-files@v44
         with:
-          base-ref: origin/master
-          include-tests: true
-          include-docs: false
-          debug: true
+          files: |
+            **/pom.xml
+            **/src/**
 
+      - name: Compute module list
+        id: modules
+        run: |
+          MODULES=$(echo "${{ steps.changed.outputs.all_changed_files }}" \
+            | grep -E '^(core|web|web-api|reader-gtfs|map-matching|tools|client-hc|navigation|example)' \
+            | cut -d'/' -f1 | sort -u | tr '\n' ',' | sed 's/,$//')
+
+          if [ -z "$MODULES" ]; then
+            echo "No modules changed. Running full build."
+            echo "modules=" >> $GITHUB_OUTPUT
+          else
+            echo "Changed modules: $MODULES"
+            echo "modules=$MODULES" >> $GITHUB_OUTPUT
+          fi
 
       - name: Run PIT mutation testing
-        if: steps.changed-modules.outputs.all != ''
+        if: steps.modules.outputs.modules != ''
         run: |
           mvn -B org.pitest:pitest-maven:mutationCoverage \
-            -pl ${{ steps.changed-modules.outputs.all }} \
+            -pl ${{ steps.modules.outputs.modules }} \
+            -DtargetClasses='com.graphhopper.*' \
+            -DtargetTests='com.graphhopper.*Test' \
+            -DreportsDirectory=target/pit-reports \
+            -DtimestampedReports=false
+
+      - name: Run PIT (full fallback)
+        if: steps.modules.outputs.modules == ''
+        run: |
+          mvn -B org.pitest:pitest-maven:mutationCoverage \
             -DtargetClasses='com.graphhopper.*' \
             -DtargetTests='com.graphhopper.*Test' \
             -DreportsDirectory=target/pit-reports \
@@ -93,13 +116,10 @@ jobs:
         run: |
           echo "=== Checking mutation score regression ==="
           failed=false
-
           for file in $(find . -name "mutation.xml"); do
             module=$(echo "$file" | cut -d'/' -f2)
             coverage=$(xmllint --xpath "string(//mutationStats/@mutationCoverage)" "$file")
             echo "$module: $coverage%"
-
-            # Charger l'ancien score s'il existe
             old_file="pit-score-${module}.txt"
             if [ -f "$old_file" ]; then
               old=$(cat "$old_file")
@@ -109,7 +129,6 @@ jobs:
                 failed=true
               fi
             fi
-
             echo "$coverage" > "pit-score-${module}.txt"
           done
 
@@ -126,7 +145,6 @@ jobs:
           name: pit-scores
           path: pit-score-*.txt
           if-no-files-found: ignore
-
 
       - name: Upload PIT reports
         uses: actions/upload-artifact@v4
