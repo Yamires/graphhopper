@@ -54,11 +54,6 @@ jobs:
         id: changed-modules
         uses: vDka/gha-maven-list-changed-modules@v1
 
-      - name: Show changed modules
-        if: steps.changed-modules.outputs.all != ''
-        run:
-          echo "Modules to test: ${{ steps.changed-modules.outputs.all }}"
-
 
       - name: Run PIT mutation testing
         if: steps.changed-modules.outputs.all != ''
