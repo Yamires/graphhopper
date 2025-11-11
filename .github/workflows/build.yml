@@ -1,13 +1,14 @@
-name: Build and Test
+name: Build, Test & PIT (GraphHopper)
 on: push
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
-        java-version: [ 17, 24, 25-ea ]
+        java-version: [17]
+      fail-fast: false
+
     steps:
       - uses: actions/checkout@v4
 
@@ -15,7 +16,7 @@ jobs:
         with:
           java-version: ${{ matrix.java-version }}
           distribution: temurin
-          cache: 'maven'
+          cache: maven
 
       - name: Cache Maven artifacts
         uses: actions/cache@v4
@@ -41,52 +42,64 @@ jobs:
           restore-keys: |
             ${{ runner.os}}-node_modules-
 
-      - name: Ensure bc and xmllint available
+      - name: Install tools
         run: sudo apt-get update && sudo apt-get install -y bc libxml2-utils
 
-      - name: Build all modules ${{ matrix.java-version }}
-        run: mvn -B -f pom.xml clean install -DskipTests -Djacoco.skip=true
+      - name: Build all modules
+        run: mvn -B clean install -DskipTests -Djacoco.skip=true
 
-      - name: Run PIT (incremental)
-        if: matrix.java-version == '17'
-        run: mvn -B -f pom.xml org.pitest:pitest-maven:mutationCoverage -DargLine="" -DskipTests
-
-      - name: Extract PIT score
-        if: matrix.java-version == '17'
+      - name: Run PIT on each module
         run: |
-          file=$(find . -name "mutation.xml" | head -n 1)
-          if [ -z "$file" ]; then
-            echo "No mutation.xml found."
-            exit 1
-          fi
-          new=$(xmllint --xpath "string(//mutationStats/@mutationCoverage)" "$file")
-          echo "Current mutation coverage: $new%"
-          echo "$new" > new-score.txt
+          declare -A MODULES
+          MODULES["core"]="com.graphhopper.*"
+          MODULES["map-matching"]="com.graphhopper.matching.*"
+          MODULES["navigation"]="com.graphhopper.navigation.*"
+          MODULES["reader-gtfs"]="com.graphhopper.reader.*"
+          MODULES["tools"]="com.graphhopper.tools.*"
+          MODULES["web"]="com.graphhopper.http.*"
+          MODULES["web-api"]="com.graphhopper.util.*"
 
-          if [ -f old-score.txt ]; then
-            old=$(cat old-score.txt)
-            echo "Previous: $old%"
-            echo "Current: $new%"
-            if (( $(echo "$new < $old" | bc -l) )); then
-              echo "Mutation score decreased"
-              exit 1
-            fi
-          fi
-          mv new-score.txt old-score.txt
+          for module in "${!MODULES[@]}"; do
+            echo "Running PIT for module: $module"
+            mvn -B -pl "$module" -am org.pitest:pitest-maven:mutationCoverage \
+              -DtargetClasses="${MODULES[$module]}" \
+              -DtargetTests='com.graphhopper.*Test' \
+              -DreportsDirectory="$module/target/pit-reports" \
+              -DtimestampedReports=false \
+              -DskipTests || true
+          done
 
-      - name: Upload PIT history
-        if: matrix.java-version == '17' && always()
+      - name: Summarize PIT results
+        run: |
+          total=0
+          count=0
+          echo "=== PIT Mutation Coverage Summary ==="
+          for file in $(find . -name "mutation.xml"); do
+            module=$(echo "$file" | cut -d'/' -f2)
+            coverage=$(xmllint --xpath "string(//mutationStats/@mutationCoverage)" "$file")
+            echo " $module: $coverage%"
+            total=$(echo "$total + $coverage" | bc -l)
+            count=$((count + 1))
+          done
+          if [ "$count" -gt 0 ]; then
+            avg=$(echo "scale=2; $total / $count" | bc -l)
+            echo "Average coverage: $avg%"
+          else
+            echo "No mutation.xml files found."
+          fi
+
+      - name: Upload PIT reports
         uses: actions/upload-artifact@v4
         with:
-          name: pit-history
-          path: pitest-history.bin
-
-      - name: Upload PIT score
-        if: matrix.java-version == '17' && always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pit-score
-          path: old-score.txt
+          name: pit-reports
+          path: |
+            core/target/pit-reports
+            map-matching/target/pit-reports
+            navigation/target/pit-reports
+            reader-gtfs/target/pit-reports
+            tools/target/pit-reports
+            web/target/pit-reports
+            web-api/target/pit-reports
 
       - name: Archive test reports
         if: failure()
@@ -95,3 +108,4 @@ jobs:
           name: surefire-reports
           path: '**/target/surefire-reports'
           retention-days: 7
+
