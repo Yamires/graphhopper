@@ -117,10 +117,10 @@ public class PMapTest {
      * Le code de read() lève une IllegalArgumentException lorsqu’une clé est ajoutée en double.
      * L’oracle est donc la vérification que cette exception est bien levée dans ce cas.
      */
-//    @Test
-//    public void testReadDuplicateKeyThrows() {
-//        assertThrows(IllegalArgumentException.class, () -> PMap.read(new String[]{"foo=1", "foo=2"}));
-//    }
+    @Test
+    public void testReadDuplicateKeyThrows() {
+        assertThrows(IllegalArgumentException.class, () -> PMap.read(new String[]{"foo=1", "foo=2"}));
+    }
 
     /**
      * Nom du test : testGetBool
@@ -139,14 +139,14 @@ public class PMapTest {
      * getBool("missing", false) -> retourne false, car la clé n’existe pas et la valeur par défaut est false.
      * getBool("missing", true) ->  retourne true, car la clé n’existe pas et la valeur par défaut est true.
      */
-//    @Test
-//    public void testGetBool() {
-//        PMap map = new PMap();
-//        map.putObject("flag",true);
-//
-//        assertTrue(map.getBool("flag", false));
-//        assertFalse(map.getBool("missing", false));
-//        assertTrue(map.getBool("missing", true));
-//
-//    }
+    @Test
+    public void testGetBool() {
+        PMap map = new PMap();
+        map.putObject("flag",true);
+
+        assertTrue(map.getBool("flag", false));
+        assertFalse(map.getBool("missing", false));
+        assertTrue(map.getBool("missing", true));
+
+    }
 }
