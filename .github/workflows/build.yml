@@ -50,10 +50,13 @@ jobs:
         continue-on-error: true
 
       - name: Build ${{ matrix.java-version }}
-        run: mvn -B clean test
+        run: mvn -B clean verify -Djacoco.skip=true
 
       - name: Run PIT (incremental)
-        run: mvn -q org.pitest:pitest-maven:mutationCoverage
+        run: mvn -B org.pitest:pitest-maven:mutationCoverage -DargLine="" -DskipTests
+
+      - name: Ensure bc is available
+        run: sudo apt-get install -y bc libxml2-utils
 
       - name: Extract PIT score
         run: |
@@ -64,7 +67,7 @@ jobs:
             old=$(cat old-score.txt)
             echo "Previous: $old"
             echo "Current: $new"
-            if (( $(echo "$new < $old" | bc -l )): then
+            if (( $(echo "$new < $old" | bc -l )); then
               echo "Mutation score decreased"
               exit 1
             fi

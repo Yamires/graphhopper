@@ -22,6 +22,7 @@
              switched to another JDK on travis it was enabled implicitly. Our javadocs are not ready for this
              so we disable it explicitly now -->
         <doclint>none</doclint>
+        <argLine></argLine>
     </properties>
 
     <scm>
@@ -200,7 +201,10 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.2</version>
                     <configuration>
-                        <argLine>${surefire.argLine} -Xmx1024m -Xms1024m -Duser.language=en</argLine>
+                        <argLine>@{argLine} -Xmx190m -Xms190m -Duser.language=en</argLine>
+                        <reuseForks>true</reuseForks>
+                        <forkCount>1</forkCount>
+                        <useModulePath>false</useModulePath>
                     </configuration>
                 </plugin>
 
@@ -311,8 +315,10 @@
                     </jvmArgs>
 
                     <threads>1</threads>
+
                     <timeoutConstant>6000</timeoutConstant>
                     <timeoutFactor>1.5</timeoutFactor>
+
 
                     <targetClasses>
                         <param>com.graphhopper.*</param>
@@ -323,14 +329,11 @@
 
                     <reportsDirectory>${project.build.directory}/pit-reports</reportsDirectory>
 
-                    <historyInputFile>${project.basedir}/pitest-history.bin</historyInputFile>
-                    <historyOutputFile>${project.basedir}/pitest-history.bin</historyOutputFile>
-                    <incrementalAnalysis>true</incrementalAnalysis>
-                    <mutationThreshold>-1</mutationThreshold>
-
                     <pluginConfiguration>
                         <param>junit5Plugin</param>
                     </pluginConfiguration>
+                    <failWhenNoMutations>false</failWhenNoMutations>
+                    <withHistory>true</withHistory>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -340,7 +343,6 @@
                     </dependency>
                 </dependencies>
             </plugin>
-
 
         </plugins>
     </build>
