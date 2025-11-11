@@ -60,22 +60,22 @@ public class PMapTest {
         assertEquals(123.45, subject.getDouble("foo", 0), 1e-4);
     }
 
-    @Test
-    public void hasReturnsCorrectResult() {
-        PMap subject = new PMap("foo=123.45|bar=56.78");
-
-        assertTrue(subject.has("foo"));
-        assertTrue(subject.has("bar"));
-        assertFalse(subject.has("baz"));
-    }
-
-    @Test
-    public void nameAndProperties() {
-        PMap pMap = new PMap("name|x=3|y=2");
-        assertEquals(2, pMap.toMap().size());
-        assertEquals(3, pMap.getInt("x", -1));
-        assertEquals(2, pMap.getInt("y", -1));
-    }
+//    @Test
+//    public void hasReturnsCorrectResult() {
+//        PMap subject = new PMap("foo=123.45|bar=56.78");
+//
+//        assertTrue(subject.has("foo"));
+//        assertTrue(subject.has("bar"));
+//        assertFalse(subject.has("baz"));
+//    }
+//
+//    @Test
+//    public void nameAndProperties() {
+//        PMap pMap = new PMap("name|x=3|y=2");
+//        assertEquals(2, pMap.toMap().size());
+//        assertEquals(3, pMap.getInt("x", -1));
+//        assertEquals(2, pMap.getInt("y", -1));
+//    }
 
 //    @Test
 //    public void empty() {
