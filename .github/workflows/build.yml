@@ -47,24 +47,26 @@ jobs:
       - name: Install tools
         run: sudo apt-get update && sudo apt-get install -y bc libxml2-utils
 
-      - name: Restore previous PIT scores
-        uses: actions/cache/restore@v4
+      # Téléchargement des scores PIT du run précédent
+      - name: Download previous PIT scores
+        uses: dawidd6/action-download-artifact@v3
         with:
-          path: pit-scores-cache
-          key: pit-scores-${{ github.ref_name }}-${{ github.sha }}
-          restore-keys: |
-            pit-scores-${{ github.ref_name }}-
-            pit-scores-main-
+          workflow: ${{ github.workflow }}
+          branch: ${{ github.ref_name }}
+          name: pit-scores-baseline
+          path: .
+          if_no_artifact_found: warn
+        continue-on-error: true
 
-      - name: Copy cached scores to working directory
+      - name: List downloaded scores
         run: |
-          if [ -d pit-scores-cache ]; then
-            cp pit-scores-cache/*.txt . 2>/dev/null || echo "No cached scores found (first run?)"
-          fi
+          echo "=== Previous scores found ==="
+          ls -la pit-score-*.txt 2>/dev/null || echo "No previous scores (first run or download failed)"
 
       - name: Build all modules
         run: mvn -B clean install -DskipTests -Djacoco.skip=true
 
+      # Détection des modules Maven modifiés
       - name: Detect changed Maven modules
         id: changed
         uses: tj-actions/changed-files@v44
@@ -109,6 +111,7 @@ jobs:
             -DoutputFormats=XML,HTML \
             -DtimestampedReports=false
 
+      # Vérification des scores de mutation par module
       - name: Check mutation coverage regression
         run: |
           echo "=== Checking mutation score regression ==="
@@ -122,12 +125,12 @@ jobs:
             killed=$(xmllint --xpath "count(//mutation[@detected='true'])" "$file")
           
             if [ "$total" -eq 0 ]; then
-              echo "⚠$module: No mutations found (skipped)"
+              echo "⚠️  $module: No mutations found (skipped)"
               continue
             fi
           
             coverage=$(echo "scale=2; 100 * $killed / $total" | bc -l)
-            echo "$module: ${coverage}% ($killed/$total mutations killed)"
+            echo "📊 $module: ${coverage}% ($killed/$total mutations killed)"
           
             # Vérifie si un score précédent existe
             old_file="pit-score-${module}.txt"
@@ -136,7 +139,7 @@ jobs:
               echo "   Previous: ${old}%"
           
               if (( $(echo "$coverage < $old" | bc -l) )); then
-                echo "REGRESSION: Mutation score decreased for $module (${coverage}% < ${old}%)"
+                echo "❌ REGRESSION: Mutation score decreased for $module (${coverage}% < ${old}%)"
                 failed=true
               else
                 echo "✅ OK: Score maintained or improved"
@@ -151,41 +154,31 @@ jobs:
           
           if [ "$failed" = true ]; then
             echo ""
-            echo "Build failed: one or more modules lost mutation coverage."
+            echo "❌ Build failed: one or more modules lost mutation coverage."
             exit 1
           else
             echo ""
-            echo "All modules maintained or improved mutation coverage."
+            echo "✅ All modules maintained or improved mutation coverage."
           fi
 
-      - name: Save PIT scores to cache
+      # Upload des scores comme artifact (baseline pour le prochain run)
+      - name: Upload PIT scores baseline
         if: always()
-        uses: actions/cache/save@v4
+        uses: actions/upload-artifact@v4
         with:
-          path: pit-scores-cache
-          key: pit-scores-${{ github.ref_name }}-${{ github.sha }}
+          name: pit-scores-baseline
+          path: pit-score-*.txt
+          if-no-files-found: ignore
+          retention-days: 90
+          overwrite: true
 
-      - name: Prepare scores for caching
-        if: always()
-        run: |
-          mkdir -p pit-scores-cache
-          cp pit-score-*.txt pit-scores-cache/ 2>/dev/null || true
-
+      # Artifacts pour consultation
       - name: Upload PIT reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pit-reports-java-${{ matrix.java-version }}
           path: '**/target/pit-reports'
-          if-no-files-found: ignore
-          retention-days: 30
-
-      - name: Upload PIT scores
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pit-scores-java-${{ matrix.java-version }}
-          path: pit-score-*.txt
           if-no-files-found: ignore
           retention-days: 30
 
