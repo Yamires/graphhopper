@@ -85,5 +85,13 @@ jobs:
           path: old-score.txt
         if: always()
 
+      - name: Archive test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: '**/target/surefire-reports'
+          retention-days: 7
+
 
 
