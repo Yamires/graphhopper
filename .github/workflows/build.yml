@@ -131,29 +131,43 @@ jobs:
       - name: Enforce PIT mutation coverage threshold
         run: |
           echo "=== Checking mutation score regression ==="
-          failed=false
-          for file in $(find . -name "mutations.xml"); do
+            failed=false
+            
+            for file in $(find . -name "mutations.xml"); do
             module=$(echo "$file" | cut -d'/' -f2)
-            coverage=$(xmllint --xpath "string(//mutationStats/@mutationCoverage)" "$file")
-            echo "$module: $coverage%"
+          
+            # Compte les mutations totales et celles détectées
+            total=$(xmllint --xpath "count(//mutation)" "$file")
+            killed=$(xmllint --xpath "count(//mutation[@detected='true'])" "$file")
+          
+            if [ "$total" -eq 0 ]; then
+          echo "$module: No mutations found."
+            continue
+            fi
+          
+            coverage=$(echo "scale=2; 100 * $killed / $total" | bc -l)
+          echo "$module: $coverage%"
+          
             old_file="pit-score-${module}.txt"
             if [ -f "$old_file" ]; then
-              old=$(cat "$old_file")
-              echo "Previous: $old%"
-              if (( $(echo "$coverage < $old" | bc -l) )); then
-                echo " Mutation score decreased for module $module"
-                failed=true
-              fi
+            old=$(cat "$old_file")
+          echo "Previous: $old%"
+            if (( $(echo "$coverage < $old" | bc -l) )); then
+            echo " Mutation score decreased for module $module"
+            failed=true
             fi
-            echo "$coverage" > "pit-score-${module}.txt"
-          done
-
-          if [ "$failed" = true ]; then
-            echo "Build failed: one or more modules lost mutation coverage."
+            fi
+          
+            echo "$coverage" > "$old_file"
+            done
+            
+            if [ "$failed" = true ]; then
+          echo "Build failed: one or more modules lost mutation coverage."
             exit 1
-          else
+            else
             echo "All modules maintained or improved mutation coverage."
-          fi
+            fi
+
 
       - name: Upload PIT scores
         uses: actions/upload-artifact@v4

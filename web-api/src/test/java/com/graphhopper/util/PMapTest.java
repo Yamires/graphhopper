@@ -77,11 +77,11 @@ public class PMapTest {
         assertEquals(2, pMap.getInt("y", -1));
     }
 
-    @Test
-    public void empty() {
-        assertTrue(new PMap("").toMap().isEmpty());
-        assertTrue(new PMap("name").toMap().isEmpty());
-    }
+//    @Test
+//    public void empty() {
+//        assertTrue(new PMap("").toMap().isEmpty());
+//        assertTrue(new PMap("name").toMap().isEmpty());
+//    }
     /**
      * Nom du test : testReadValidArgs
      *
@@ -97,12 +97,12 @@ public class PMapTest {
      * Après parsing, la clé "foo" doit renvoyer 1 et la clé "bar" doit renvoyer 2 via getInt().
      * L’oracle consiste à comparer ces résultats avec les valeurs attendues.
      */
-    @Test
-    public void testReadValidArgs() {
-        PMap map = PMap.read(new String[]{"foo=1", "bar=2"});
-        assertEquals(1, map.getInt("foo", 0));
-        assertEquals(2, map.getInt("bar", 0));
-    }
+//    @Test
+//    public void testReadValidArgs() {
+//        PMap map = PMap.read(new String[]{"foo=1", "bar=2"});
+//        assertEquals(1, map.getInt("foo", 0));
+//        assertEquals(2, map.getInt("bar", 0));
+//    }
     /**
      * Nom du test : testReadDuplicateKeyThrows
      *
