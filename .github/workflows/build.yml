@@ -95,24 +95,38 @@ jobs:
             -DoutputFormats=XML,HTML \
             -DtimestampedReports=false
 
-      - name: Summarize PIT results
+      - name: Extract PIT score
+        if: matrix.java-version == '17'
         run: |
-          total=0
-          count=0
-          echo "=== PIT Mutation Coverage Summary ==="
-          for file in $(find . -name "mutations.xml"); do
-            module=$(echo "$file" | cut -d'/' -f2)
-            coverage=$(xmllint --xpath "string(//mutationStats/@mutationCoverage)" "$file")
-            echo " $module: $coverage%"
-            total=$(echo "$total + $coverage" | bc -l)
-            count=$((count + 1))
-          done
-          if [ "$count" -gt 0 ]; then
-            avg=$(echo "scale=2; $total / $count" | bc -l)
-            echo "Average coverage: $avg%"
-          else
-            echo "No mutations.xml files found."
+          file=$(find . -name "mutations.xml" | head -n 1)
+          if [ -z "$file" ]; then
+            echo "No mutations.xml found."
+            exit 1
           fi
+
+          total=$(xmllint --xpath "count(//mutation)" "$file")
+          killed=$(xmllint --xpath "count(//mutation[@detected='true'])" "$file")
+
+          if [ "$total" -eq 0 ]; then
+            echo "No mutations found."
+            exit 1
+          fi
+
+          new=$(echo "scale=2; 100 * $killed / $total" | bc -l)
+          echo "Current mutation coverage: $new%"
+          echo "$new" > new-score.txt
+
+          if [ -f old-score.txt ]; then
+            old=$(cat old-score.txt)
+            echo "Previous: $old%"
+            if (( $(echo "$new < $old" | bc -l) )); then
+              echo "Mutation score decreased"
+              exit 1
+            fi
+          fi
+
+          mv new-score.txt old-score.txt
+
 
       - name: Enforce PIT mutation coverage threshold
         run: |
