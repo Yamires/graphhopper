@@ -1,4 +1,4 @@
-name: Build, Test & PIT (GraphHopper)
+name: Build, Test & PIT
 on: push
 
 jobs:
@@ -54,8 +54,7 @@ jobs:
             -DtargetClasses='com.graphhopper.*' \
             -DtargetTests='com.graphhopper.*Test' \
             -DreportsDirectory=target/pit-reports \
-            -DtimestampedReports=false \
-            -DskipTests
+            -DtimestampedReports=false
 
       - name: Summarize PIT results
         run: |
@@ -119,7 +118,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pit-reports
-          path: target/pit-reports
+          path: '**/target/pit-reports'
           if-no-files-found: ignore
 
       - name: Archive test reports
