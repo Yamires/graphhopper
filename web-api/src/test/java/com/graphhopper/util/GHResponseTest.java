@@ -30,11 +30,11 @@ public class GHResponseTest {
         assertEquals("no paths", new GHResponse().toString());
     }
 
-//    @Test
-//    public void testHasNoErrorIfEmpty() {
-//        assertFalse(new GHResponse().hasErrors());
-//        GHResponse rsp = new GHResponse();
-//        rsp.add(new ResponsePath());
-//        assertFalse(rsp.hasErrors());
-//    }
+    @Test
+    public void testHasNoErrorIfEmpty() {
+        assertFalse(new GHResponse().hasErrors());
+        GHResponse rsp = new GHResponse();
+        rsp.add(new ResponsePath());
+        assertFalse(rsp.hasErrors());
+    }
 }
