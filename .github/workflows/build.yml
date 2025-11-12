@@ -49,19 +49,41 @@ jobs:
 
       # Téléchargement des scores PIT du run précédent
       - name: Download previous PIT scores
-        uses: dawidd6/action-download-artifact@v3
-        with:
-          workflow: ${{ github.workflow }}
-          branch: ${{ github.ref_name }}
-          name: pit-scores-baseline
-          path: .
-          if_no_artifact_found: warn
-        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "=== Attempting to download previous PIT scores ==="
+          
+          # Télécharge l'artifact du dernier run réussi sur cette branche
+          gh run list \
+            --workflow="${{ github.workflow }}" \
+            --branch="${{ github.ref_name }}" \
+            --status=success \
+            --limit=5 \
+            --json databaseId \
+            --jq '.[].databaseId' | while read run_id; do
+          
+            echo "Checking run #$run_id for artifacts..."
+          
+            if gh run download "$run_id" \
+              --name pit-scores-baseline \
+              --dir . 2>/dev/null; then
+              echo "✅ Successfully downloaded scores from run #$run_id"
+              exit 0
+            fi
+          done
+          
+          echo "⚠️  No previous scores found (this is normal for the first run)"
 
       - name: List downloaded scores
         run: |
-          echo "=== Previous scores found ==="
-          ls -la pit-score-*.txt 2>/dev/null || echo "No previous scores (first run or download failed)"
+          echo "=== Previous scores status ==="
+          if ls pit-score-*.txt 1> /dev/null 2>&1; then
+            echo "✅ Found previous scores:"
+            ls -la pit-score-*.txt
+          else
+            echo "ℹ️  No previous scores (baseline will be set)"
+          fi
 
       - name: Build all modules
         run: mvn -B clean install -DskipTests -Djacoco.skip=true
