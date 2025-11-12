@@ -327,8 +327,8 @@
                     </targetTests>
                     <excludedClasses>
                         <param>com.graphhopper.GraphHopper</param>
-                        <param>com.graphhopper.routing.lm.*</param>
-                        <param>com.graphhopper.reader.osm.*</param>
+                        <param>com.graphhopper.routing.*</param>
+                        <param>com.graphhopper.reader.*</param>
                     </excludedClasses>
 
 
