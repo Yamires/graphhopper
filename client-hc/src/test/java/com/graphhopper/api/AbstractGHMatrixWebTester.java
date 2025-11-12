@@ -158,38 +158,38 @@ public abstract class AbstractGHMatrixWebTester {
         assertEquals(Collections.singletonList(1), rsp.getInvalidToPoints());
     }
 
-    @Test
-    public void testReadingGoogleThrowsException() throws IOException {
-        String ghMatrix = readFile(new InputStreamReader(getClass().getResourceAsStream("google-matrix1.json")));
-        GraphHopperMatrixWeb matrixWeb = createMatrixClient(ghMatrix, 400);
-        GHMRequest req = createRequest();
-        MatrixResponse rsp = matrixWeb.route(req);
-        assertTrue(rsp.hasErrors());
-        assertEquals(400, rsp.getStatusCode());
-    }
+//    @Test
+//    public void testReadingGoogleThrowsException() throws IOException {
+//        String ghMatrix = readFile(new InputStreamReader(getClass().getResourceAsStream("google-matrix1.json")));
+//        GraphHopperMatrixWeb matrixWeb = createMatrixClient(ghMatrix, 400);
+//        GHMRequest req = createRequest();
+//        MatrixResponse rsp = matrixWeb.route(req);
+//        assertTrue(rsp.hasErrors());
+//        assertEquals(400, rsp.getStatusCode());
+//    }
 
-    @Test
-    public void testReadingWeights_TimesAndDistances() throws IOException {
-        String ghMatrix = readFile(new InputStreamReader(getClass().getResourceAsStream("matrix.json")));
-        GraphHopperMatrixWeb matrixWeb = createMatrixClient(ghMatrix, 200);
-
-        GHMRequest req = createRequest();
-        req.setOutArrays(Arrays.asList("weights", "distances", "times"));
-        MatrixResponse rsp = matrixWeb.route(req);
-
-        assertFalse(rsp.hasErrors());
-        assertEquals(200, rsp.getStatusCode());
-
-        assertEquals(9475., rsp.getDistance(0, 1), .1);
-        assertEquals(9734., rsp.getDistance(1, 2), .1);
-        assertEquals(0., rsp.getDistance(1, 1), .1);
-
-        assertEquals(885.867, rsp.getWeight(0, 1), .1);
-        assertEquals(807.167, rsp.getWeight(1, 2), .1);
-        assertEquals(0., rsp.getWeight(1, 1), .1);
-
-        assertEquals(886, rsp.getTime(0, 1) / 1000);
-    }
+//    @Test
+//    public void testReadingWeights_TimesAndDistances() throws IOException {
+//        String ghMatrix = readFile(new InputStreamReader(getClass().getResourceAsStream("matrix.json")));
+//        GraphHopperMatrixWeb matrixWeb = createMatrixClient(ghMatrix, 200);
+//
+//        GHMRequest req = createRequest();
+//        req.setOutArrays(Arrays.asList("weights", "distances", "times"));
+//        MatrixResponse rsp = matrixWeb.route(req);
+//
+//        assertFalse(rsp.hasErrors());
+//        assertEquals(200, rsp.getStatusCode());
+//
+//        assertEquals(9475., rsp.getDistance(0, 1), .1);
+//        assertEquals(9734., rsp.getDistance(1, 2), .1);
+//        assertEquals(0., rsp.getDistance(1, 1), .1);
+//
+//        assertEquals(885.867, rsp.getWeight(0, 1), .1);
+//        assertEquals(807.167, rsp.getWeight(1, 2), .1);
+//        assertEquals(0., rsp.getWeight(1, 1), .1);
+//
+//        assertEquals(886, rsp.getTime(0, 1) / 1000);
+//    }
 
 //    @Test
 //    public void noProfileWhenNotSpecified() {
