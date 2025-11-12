@@ -32,7 +32,6 @@ mvn -B org.pitest:pitest-maven:mutationCoverage \
   -DtimeoutConstant=60000 \
   -DtimeoutFactor=2 \
   -DdependencyDistance=0 \
-  -DfailWhenNoMutations=false \
-  -Dverbose=true
+  -DfailWhenNoMutations=false
 
 echo "PIT mutation testing completed"
