@@ -55,7 +55,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          .github/workflows/scripts/download-pit-scores.sh
+          .github/workflows/scripts/download-pit-scores.sh \
           "${{ github.workflow }}" \
           "${{ github.ref_name }}" \
           5
