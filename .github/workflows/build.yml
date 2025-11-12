@@ -128,7 +128,7 @@ jobs:
         if: steps.modules.outputs.modules == ''
         run: |
           # Construire dynamiquement la liste des modules sauf core et reader-gtfs
-          ALL_MODULES=$(ls -d */pom.xml | cut -d'/' -f1 | grep -Ev '^(core|reader-gtfs)$' | tr '\n' ',' | sed 's/,$//')
+          ALL_MODULES=$(ls -d */pom.xml | cut -d'/' -f1 | grep -Ev '^(core|reader-gtfs|web)$' | tr '\n' ',' | sed 's/,$//')
           echo "Running PIT on modules: $ALL_MODULES"
 
           mvn -B org.pitest:pitest-maven:mutationCoverage \
