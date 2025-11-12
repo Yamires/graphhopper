@@ -126,7 +126,10 @@ jobs:
       - name: Run PIT mutation testing (full)
         if: steps.modules.outputs.modules == ''
         run: |
+          ALL_MODULES=$(ls -d */pom.xml | cut -d'/' -f1 | grep -v 'core' | tr '\n' ',' | sed 's/,$//')
+          echo "Running PIT on modules: $ALL_MODULES"
           mvn -B org.pitest:pitest-maven:mutationCoverage \
+            -pl $ALL_MODULES \
             -DtargetClasses='com.graphhopper.*' \
             -DtargetTests='com.graphhopper.*Test' \
             -DreportsDirectory=target/pit-reports \
