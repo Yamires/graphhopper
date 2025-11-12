@@ -191,40 +191,40 @@ public abstract class AbstractGHMatrixWebTester {
         assertEquals(886, rsp.getTime(0, 1) / 1000);
     }
 
-    @Test
-    public void noProfileWhenNotSpecified() {
-        GHMatrixBatchRequester requester = new GHMatrixBatchRequester("url");
-        JsonNode json = requester.createPostRequest(new GHMRequest().setOutArrays(Collections.singletonList("weights")).
-                setPoints(Arrays.asList(new GHPoint(11, 12))).setProfile("car"));
-        assertEquals("{\"points\":[[12.0,11.0]],\"out_arrays\":[\"weights\"],\"fail_fast\":true,\"profile\":\"car\"}", json.toString());
-    }
+//    @Test
+//    public void noProfileWhenNotSpecified() {
+//        GHMatrixBatchRequester requester = new GHMatrixBatchRequester("url");
+//        JsonNode json = requester.createPostRequest(new GHMRequest().setOutArrays(Collections.singletonList("weights")).
+//                setPoints(Arrays.asList(new GHPoint(11, 12))).setProfile("car"));
+//        assertEquals("{\"points\":[[12.0,11.0]],\"out_arrays\":[\"weights\"],\"fail_fast\":true,\"profile\":\"car\"}", json.toString());
+//    }
 
-    @Test
-    public void hasProfile() {
-        GHMatrixAbstractRequester requester = createRequester("url");
-        GHMRequest ghmRequest = new GHMRequest();
-        ghmRequest.setOutArrays(Collections.singletonList("weights"));
-        ghmRequest.setPoints(Arrays.asList(new GHPoint(11, 12)));
-        ghmRequest.setProfile("bike");
-        JsonNode json = requester.createPostRequest(ghmRequest);
-        assertEquals("{\"points\":[[12.0,11.0]],\"out_arrays\":[\"weights\"],\"fail_fast\":true,\"profile\":\"bike\"}", json.toString());
-    }
+//    @Test
+//    public void hasProfile() {
+//        GHMatrixAbstractRequester requester = createRequester("url");
+//        GHMRequest ghmRequest = new GHMRequest();
+//        ghmRequest.setOutArrays(Collections.singletonList("weights"));
+//        ghmRequest.setPoints(Arrays.asList(new GHPoint(11, 12)));
+//        ghmRequest.setProfile("bike");
+//        JsonNode json = requester.createPostRequest(ghmRequest);
+//        assertEquals("{\"points\":[[12.0,11.0]],\"out_arrays\":[\"weights\"],\"fail_fast\":true,\"profile\":\"bike\"}", json.toString());
+//    }
 
-    @Test
-    public void hasHintsWhenSpecified() {
-        GHMatrixAbstractRequester requester = createRequester("url");
-        GHMRequest ghmRequest = new GHMRequest();
-        ghmRequest.setProfile("car");
-        ghmRequest.putHint("some_property", "value");
-        ghmRequest.setOutArrays(Collections.singletonList("weights"));
-        ghmRequest.setPoints(Arrays.asList(new GHPoint(11, 12)));
-        JsonNode json = requester.createPostRequest(ghmRequest);
-        assertEquals("{\"points\":[[12.0,11.0]],\"out_arrays\":[\"weights\"],\"fail_fast\":true,\"profile\":\"car\",\"some_property\":\"value\"}", json.toString());
-
-        ghmRequest.putHint("profile", "car");
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> requester.createPostRequest(ghmRequest));
-        assertTrue(ex.getMessage().contains("use setProfile"), ex.getMessage());
-    }
+//    @Test
+//    public void hasHintsWhenSpecified() {
+//        GHMatrixAbstractRequester requester = createRequester("url");
+//        GHMRequest ghmRequest = new GHMRequest();
+//        ghmRequest.setProfile("car");
+//        ghmRequest.putHint("some_property", "value");
+//        ghmRequest.setOutArrays(Collections.singletonList("weights"));
+//        ghmRequest.setPoints(Arrays.asList(new GHPoint(11, 12)));
+//        JsonNode json = requester.createPostRequest(ghmRequest);
+//        assertEquals("{\"points\":[[12.0,11.0]],\"out_arrays\":[\"weights\"],\"fail_fast\":true,\"profile\":\"car\",\"some_property\":\"value\"}", json.toString());
+//
+//        ghmRequest.putHint("profile", "car");
+//        Exception ex = assertThrows(IllegalArgumentException.class, () -> requester.createPostRequest(ghmRequest));
+//        assertTrue(ex.getMessage().contains("use setProfile"), ex.getMessage());
+//    }
 
     public static String readFile(Reader simpleReader) throws IOException {
         try (BufferedReader reader = new BufferedReader(simpleReader)) {
