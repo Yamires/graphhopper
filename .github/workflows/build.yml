@@ -75,7 +75,7 @@ jobs:
       - name: Compute module list
         id: modules
         run: |
-          MODULES=$(.github/workflows/scripts/get-delta.sh "${{ steps.changed.outputs.all_changed_files }}")
+          MODULES=$(.github/workflows/scripts/get-delta.sh "${{ steps.changed.outputs.all_changed_files }}") \
           echo "modules=$MODULES" >> $GITHUB_OUTPUT
 
       - name: Run PIT mutation testing
