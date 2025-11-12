@@ -80,7 +80,7 @@ jobs:
 
       - name: Run PIT mutation testing
         env:
-          EXCLUDED_MODULES: "core|reader-gtfs|web"
+          EXCLUDED_MODULES: ""
         run: |
           .github/workflows/scripts/run-pit-test.sh "${{ steps.modules.outputs.modules }}"
 
