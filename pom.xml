@@ -325,11 +325,9 @@
                     <targetTests>
                         <param>com.graphhopper.*Test</param>
                     </targetTests>
-                    <excludedClasses>
-                        <param>com.graphhopper.GraphHopper</param>
-                        <param>com.graphhopper.routing.*</param>
-                        <param>com.graphhopper.reader.*</param>
-                    </excludedClasses>
+                    <excludedModules>
+                        <param>graphhopper-core</param>
+                    </excludedModules>
 
 
                     <reportsDirectory>${project.build.directory}/pit-reports</reportsDirectory>
