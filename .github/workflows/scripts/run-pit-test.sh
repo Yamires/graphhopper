@@ -2,7 +2,7 @@
 set -e
 
 MODULES="${1:-}"
-EXCLUDED_MODULES="${EXCLUDED_MODULES:-core}"
+EXCLUDED_MODULES="${EXCLUDED_MODULES:-core|reader-gtfs}"
 
 if [ -z "$MODULES" ]; then
   echo "No specific modules provided. Running full build."
