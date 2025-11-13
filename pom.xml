@@ -325,10 +325,6 @@
                     <targetTests>
                         <param>com.graphhopper.*Test</param>
                     </targetTests>
-                    <excludedModules>
-                        <param>graphhopper-core</param>
-                    </excludedModules>
-
 
                     <reportsDirectory>${project.build.directory}/pit-reports</reportsDirectory>
 
