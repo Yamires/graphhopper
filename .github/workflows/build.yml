@@ -79,6 +79,7 @@ jobs:
           echo "modules=$MODULES" >> $GITHUB_OUTPUT
 
       - name: Run PIT mutation testing
+        id: pit-test
         env:
           EXCLUDED_MODULES: "core|reader-gtfs"
         run: |
@@ -86,7 +87,191 @@ jobs:
 
       # Vérification des scores de mutation par module
       - name: Check mutation coverage regression
+        id: mutation-check
         run: .github/workflows/scripts/check-mutation-regression.sh
+
+      # 🎵 RICKROLL SI RÉGRESSION DÉTECTÉE 🎵
+      - name: 🎵 Rickroll on Mutation Regression 🎵
+        if: failure() && steps.mutation-check.outcome == 'failure'
+        run: |
+          # Installer curl si nécessaire
+          sudo apt-get install -y curl imagemagick 2>/dev/null || true
+          
+          # Télécharger le GIF
+          curl -L "https://media.giphy.com/media/Vuw9m5wXviFIQ/giphy.gif" -o rickroll.gif 2>/dev/null || \
+          curl -L "https://media1.tenor.com/m/x8v1oNUS5NMAAAAC/rick-roll-rick-ashley.gif" -o rickroll.gif 2>/dev/null || true
+          
+          echo ""
+          echo "╔═══════════════════════════════════════════════════════════╗"
+          echo "║                                                           ║"
+          echo "║          🎵  YOU'VE BEEN RICKROLLED!  🎵                 ║"
+          echo "║                                                           ║"
+          echo "║       ⚠️  MUTATION COVERAGE REGRESSION DETECTED ⚠️       ║"
+          echo "║                                                           ║"
+          echo "║        Never gonna let those mutants survive! 🦠          ║"
+          echo "║                                                           ║"
+          echo "╚═══════════════════════════════════════════════════════════╝"
+          echo ""
+          
+          # Convertir et afficher quelques frames du GIF en ASCII
+          if [ -f rickroll.gif ]; then
+            convert rickroll.gif[0-20] -coalesce -resize 60x30 -colorspace Gray frame_%02d.txt 2>/dev/null || true
+          
+            for frame in frame_*.txt; do
+              if [ -f "$frame" ]; then
+                convert "$frame" txt:- 2>/dev/null | awk 'NR>1 {
+                  gsub(/.*gray\(/, "", $3);
+                  gsub(/\).*/, "", $3);
+                  val = int($3 / 25.5);
+                  chars = " .:;+=xX      # 🎵 RICKROLL SI RÉGRESSION DÉTECTÉE 🎵
+      - name: 🎵 Rickroll on Mutation Regression 🎵
+        if: failure() && steps.mutation-check.outcome == 'failure'
+        run: |
+          echo ""
+          echo "╔═══════════════════════════════════════════════════════════╗"
+          echo "║                                                           ║"
+          echo "║          🎵  YOU'VE BEEN RICKROLLED!  🎵                 ║"
+          echo "║                                                           ║"
+          echo "║       ⚠️  MUTATION COVERAGE REGRESSION DETECTED ⚠️       ║"
+          echo "║                                                           ║"
+          echo "║        Never gonna let those mutants survive! 🦠          ║"
+          echo "║                                                           ║"
+          echo "╚═══════════════════════════════════════════════════════════╝"
+          echo ""
+          echo "🎵 Never gonna give you up"
+          echo "🎵 Never gonna let you down"
+          echo "🎵 Never gonna run around and desert you"
+          echo "🎵 Never gonna make you cry"
+          echo "🎵 Never gonna say goodbye"
+          echo "🎵 Never gonna tell a lie and hurt you"
+          echo ""
+          echo "💀 Fix those tests! Watch the full song for motivation:"
+          echo "👉 https://youtu.be/dQw4w9WgXcQ"
+          echo ""#@";
+                  printf substr(chars, val+1, 1);
+                  if ($1 ~ /,[0-9]+:/) print "";
+                }' 2>/dev/null || true
+                sleep 0.1
+              fi
+            done
+          fi
+          
+          echo ""
+          echo "🎵 Never gonna give you up"
+          echo "🎵 Never gonna let you down"
+          echo "🎵 Never gonna run around and desert you"
+          echo "🎵 Never gonna make you cry"
+          echo "🎵 Never gonna say goodbye"
+          echo "🎵 Never gonna tell a lie and hurt you"
+          echo ""
+          echo "💀 Fix those tests! Watch the full song for motivation:"
+          echo "👉 https://youtu.be/dQw4w9WgXcQ"
+          echo ""
+
+      - name: 🎵 Rickroll Summary on Mutation Regression 🎵
+        if: failure() && steps.mutation-check.outcome == 'failure'
+        run: |
+          echo "# 🎵 MUTATION REGRESSION - YOU GOT RICKROLLED! 🎵" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "![Rickroll](https://media.giphy.com/media/Vuw9m5wXviFIQ/giphy.gif)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## ⚠️ Mutation Coverage Regression Detected!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Some mutants survived that shouldn't have. Time to fix those tests!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🕺 Never gonna give you up" >> $GITHUB_STEP_SUMMARY
+          echo "### 💃 Never gonna let you down" >> $GITHUB_STEP_SUMMARY
+          echo "### 🎶 Never gonna run around and desert you" >> $GITHUB_STEP_SUMMARY
+          echo "### 💀 Never gonna let those mutants survive" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[Watch for motivation](https://youtu.be/dQw4w9WgXcQ) 🎵" >> $GITHUB_STEP_SUMMARY
+
+      # 🎵 RICKROLL SI TESTS ÉCHOUENT 🎵
+      - name: 🎵 Rickroll on Test Failure 🎵
+        if: failure() && steps.pit-test.outcome == 'failure'
+        run: |
+          # Installer curl si nécessaire
+          sudo apt-get install -y curl imagemagick 2>/dev/null || true
+          
+          # Télécharger le GIF
+          curl -L "https://media.giphy.com/media/Vuw9m5wXviFIQ/giphy.gif" -o rickroll.gif 2>/dev/null || \
+          curl -L "https://media1.tenor.com/m/x8v1oNUS5NMAAAAC/rick-roll-rick-ashley.gif" -o rickroll.gif 2>/dev/null || true
+          
+          echo ""
+          echo "╔═══════════════════════════════════════════════════════════╗"
+          echo "║                                                           ║"
+          echo "║          🎵  YOU'VE BEEN RICKROLLED!  🎵                 ║"
+          echo "║                                                           ║"
+          echo "║              ❌  TESTS FAILED  ❌                         ║"
+          echo "║                                                           ║"
+          echo "║        Never gonna give you up on fixing this! 🔧         ║"
+          echo "║                                                           ║"
+          echo "╚═══════════════════════════════════════════════════════════╝"
+          echo ""
+          
+          # Convertir et afficher quelques frames du GIF en ASCII
+          if [ -f rickroll.gif ]; then
+            convert rickroll.gif[0-20] -coalesce -resize 60x30 -colorspace Gray frame_%02d.txt 2>/dev/null || true
+          
+            for frame in frame_*.txt; do
+              if [ -f "$frame" ]; then
+                convert "$frame" txt:- 2>/dev/null | awk 'NR>1 {
+                  gsub(/.*gray\(/, "", $3);
+                  gsub(/\).*/, "", $3);
+                  val = int($3 / 25.5);
+                  chars = " .:;+=xX      # 🎵 RICKROLL SI TESTS ÉCHOUENT 🎵
+      - name: 🎵 Rickroll on Test Failure 🎵
+        if: failure() && steps.pit-test.outcome == 'failure'
+        run: |
+          echo ""
+          echo "╔═══════════════════════════════════════════════════════════╗"
+          echo "║                                                           ║"
+          echo "║          🎵  YOU'VE BEEN RICKROLLED!  🎵                 ║"
+          echo "║                                                           ║"
+          echo "║              ❌  TESTS FAILED  ❌                         ║"
+          echo "║                                                           ║"
+          echo "║        Never gonna give you up on fixing this! 🔧         ║"
+          echo "║                                                           ║"
+          echo "╚═══════════════════════════════════════════════════════════╝"
+          echo ""
+          echo "🎵 Never gonna give you up"
+          echo "🎵 Never gonna let you down"
+          echo "🎵 Never gonna run around and desert you"
+          echo ""
+          echo "🔨 Fix those tests! https://youtu.be/dQw4w9WgXcQ"
+          echo ""#@";
+                  printf substr(chars, val+1, 1);
+                  if ($1 ~ /,[0-9]+:/) print "";
+                }' 2>/dev/null || true
+                sleep 0.1
+              fi
+            done
+          fi
+          
+          echo ""
+          echo "🎵 Never gonna give you up"
+          echo "🎵 Never gonna let you down"
+          echo "🎵 Never gonna run around and desert you"
+          echo ""
+          echo "🔨 Fix those tests! https://youtu.be/dQw4w9WgXcQ"
+          echo ""
+
+      - name: 🎵 Rickroll Summary on Test Failure 🎵
+        if: failure() && steps.pit-test.outcome == 'failure'
+        run: |
+          echo "# 🎵 TESTS FAILED - YOU GOT RICKROLLED! 🎵" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "![Rickroll](https://media.giphy.com/media/Vuw9m5wXviFIQ/giphy.gif)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## ❌ Some tests didn't pass!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Time to debug and fix! 🔧" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🕺 Never gonna give you up" >> $GITHUB_STEP_SUMMARY
+          echo "### 💃 Never gonna let you down" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔨 Never gonna give up on fixing this" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[Watch for motivation](https://youtu.be/dQw4w9WgXcQ) 🎵" >> $GITHUB_STEP_SUMMARY
 
       # Upload des scores comme artifact (baseline pour le prochain run)
       - name: Upload PIT scores baseline
