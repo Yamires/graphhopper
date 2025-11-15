@@ -53,6 +53,7 @@ for file in $(find . -name "mutations.xml" | sort); do
     elif (( $(echo "$coverage < $old" | bc -l) )); then
       printf "(Regression: -%.2f%%)\n" "$abs_diff"
       status="Regression"
+      failed=true
     else
       printf "(Unchanged)\n"
       status="Unchanged"

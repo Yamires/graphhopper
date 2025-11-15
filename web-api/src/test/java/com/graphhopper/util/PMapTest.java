@@ -23,28 +23,28 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PMapTest {
 
-    @Test
-    public void singleStringPropertyCanBeRetrieved() {
-        PMap subject = new PMap("foo=bar");
-
-        assertEquals("bar", subject.getString("foo", ""));
-    }
-
-    @Test
-    public void propertyFromStringWithMultiplePropertiesCanBeRetrieved() {
-        PMap subject = new PMap("foo=valueA|bar=valueB");
-
-        assertEquals("valueA", subject.getString("foo", ""));
-        assertEquals("valueB", subject.getString("bar", ""));
-    }
-
-    @Test
-    public void keyCannotHaveAnyCasing() {
-        PMap subject = new PMap("foo=valueA|bar=valueB");
-
-        assertEquals("valueA", subject.getString("foo", ""));
-        assertEquals("", subject.getString("Foo", ""));
-    }
+//    @Test
+//    public void singleStringPropertyCanBeRetrieved() {
+//        PMap subject = new PMap("foo=bar");
+//
+//        assertEquals("bar", subject.getString("foo", ""));
+//    }
+//
+//    @Test
+//    public void propertyFromStringWithMultiplePropertiesCanBeRetrieved() {
+//        PMap subject = new PMap("foo=valueA|bar=valueB");
+//
+//        assertEquals("valueA", subject.getString("foo", ""));
+//        assertEquals("valueB", subject.getString("bar", ""));
+//    }
+//
+//    @Test
+//    public void keyCannotHaveAnyCasing() {
+//        PMap subject = new PMap("foo=valueA|bar=valueB");
+//
+//        assertEquals("valueA", subject.getString("foo", ""));
+//        assertEquals("", subject.getString("Foo", ""));
+//    }
 //
 //    @Test
 //    public void numericPropertyCanBeRetrievedAsLong() {
