@@ -178,102 +178,102 @@ public class GpxConversionsTest {
         assertTrue(gpxStr.contains("<gh:exit_number>3</gh:exit_number>"), gpxStr);
         verifyGPX(gpxStr);
     }
-//
-//    @Test
-//    public void testCreateGPXCorrectFormattingSmallNumbers() {
-//        InstructionList instructions = new InstructionList(trMap.getWithFallBack(Locale.US));
-//
-//        PointList pl = new PointList();
-//        pl.add(0.000001, 0.000001);
-//        pl.add(-0.000123, -0.000125);
-//        Instruction instruction = new Instruction(0, "do it", pl);
-//        instructions.add(instruction);
-//        instructions.add(new FinishInstruction(0.000852, 0.000852, 0));
-//
-//        String gpxStr = GpxConversions.createGPX(instructions, "test", 0, true, true, true, true, Constants.VERSION, trMap.getWithFallBack(Locale.US));
-//
-//        assertFalse(gpxStr.contains("E-"), gpxStr);
-//        assertTrue(gpxStr.contains("0.000001"), gpxStr);
-//        assertTrue(gpxStr.contains("-0.000125"), gpxStr);
-//        verifyGPX(gpxStr);
-//    }
-//
-//    @Test
-//    public void testXMLEscape_issue572() {
-//        assertEquals("_", GpxConversions.simpleXMLEscape("<"));
-//        assertEquals("_blup_", GpxConversions.simpleXMLEscape("<blup>"));
-//        assertEquals("a&amp;b", GpxConversions.simpleXMLEscape("a&b"));
-//    }
-//
-//    private void verifyGPX(String gpx) {
-//        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-//        Schema schema = null;
-//        try {
-//            Source schemaFile = new StreamSource(getClass().getResourceAsStream("gpx-schema.xsd"));
-//            schema = schemaFactory.newSchema(schemaFile);
-//
-//            // using more schemas: http://stackoverflow.com/q/1094893/194609
-//        } catch (SAXException e1) {
-//            throw new IllegalStateException("There was a problem with the schema supplied for validation. Message:" + e1.getMessage());
-//        }
-//        Validator validator = schema.newValidator();
-//        try {
-//            validator.validate(new StreamSource(new StringReader(gpx)));
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    private double sumDistances(InstructionList il) {
-//        double val = 0;
-//        for (Instruction i : il) {
-//            val += i.getDistance();
-//        }
-//        return val;
-//    }
-//
-//    @Test
-//    public void testCalcAzimuthAndGetDirection() {
-//        PointList pl = new PointList();
-//        pl.add(49.942, 11.584);
-//
-//        PointList nextPl = new PointList();
-//        nextPl.add(49.942, 11.582);
-//        Instruction currI = new Instruction(Instruction.CONTINUE_ON_STREET, "temp", pl);
-//        Instruction nextI = new Instruction(Instruction.CONTINUE_ON_STREET, "next", nextPl);
-//
-//        assertEquals(270, GpxConversions.calcAzimuth(currI, nextI), .1);
-//        assertEquals("W", GpxConversions.calcDirection(currI, nextI));
-//
-//        PointList p2 = new PointList();
-//        p2.add(49.942, 11.580);
-//        p2.add(49.944, 11.582);
-//        Instruction i2 = new Instruction(Instruction.CONTINUE_ON_STREET, "temp", p2);
-//
-//        assertEquals(32.76, GpxConversions.calcAzimuth(i2, null), .1);
-//        assertEquals("NE", GpxConversions.calcDirection(i2, null));
-//
-//        PointList p3 = new PointList();
-//        p3.add(49.942, 11.580);
-//        p3.add(49.944, 11.580);
-//        Instruction i3 = new Instruction(Instruction.CONTINUE_ON_STREET, "temp", p3);
-//
-//        assertEquals(0, GpxConversions.calcAzimuth(i3, null), .1);
-//        assertEquals("N", GpxConversions.calcDirection(i3, null));
-//
-//        PointList p4 = new PointList();
-//        p4.add(49.940, 11.580);
-//        p4.add(49.920, 11.586);
-//        Instruction i4 = new Instruction(Instruction.CONTINUE_ON_STREET, "temp", p4);
-//
-//        assertEquals("S", GpxConversions.calcDirection(i4, null));
-//
-//        PointList p5 = new PointList();
-//        p5.add(49.940, 11.580);
-//        Instruction i5 = new Instruction(Instruction.CONTINUE_ON_STREET, "temp", p5);
-//
-//        assertTrue(Double.isNaN(GpxConversions.calcAzimuth(i5, null)));
-//        assertEquals("", GpxConversions.calcDirection(i5, null));
-//    }
+
+    @Test
+    public void testCreateGPXCorrectFormattingSmallNumbers() {
+        InstructionList instructions = new InstructionList(trMap.getWithFallBack(Locale.US));
+
+        PointList pl = new PointList();
+        pl.add(0.000001, 0.000001);
+        pl.add(-0.000123, -0.000125);
+        Instruction instruction = new Instruction(0, "do it", pl);
+        instructions.add(instruction);
+        instructions.add(new FinishInstruction(0.000852, 0.000852, 0));
+
+        String gpxStr = GpxConversions.createGPX(instructions, "test", 0, true, true, true, true, Constants.VERSION, trMap.getWithFallBack(Locale.US));
+
+        assertFalse(gpxStr.contains("E-"), gpxStr);
+        assertTrue(gpxStr.contains("0.000001"), gpxStr);
+        assertTrue(gpxStr.contains("-0.000125"), gpxStr);
+        verifyGPX(gpxStr);
+    }
+
+    @Test
+    public void testXMLEscape_issue572() {
+        assertEquals("_", GpxConversions.simpleXMLEscape("<"));
+        assertEquals("_blup_", GpxConversions.simpleXMLEscape("<blup>"));
+        assertEquals("a&amp;b", GpxConversions.simpleXMLEscape("a&b"));
+    }
+
+    private void verifyGPX(String gpx) {
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema schema = null;
+        try {
+            Source schemaFile = new StreamSource(getClass().getResourceAsStream("gpx-schema.xsd"));
+            schema = schemaFactory.newSchema(schemaFile);
+
+            // using more schemas: http://stackoverflow.com/q/1094893/194609
+        } catch (SAXException e1) {
+            throw new IllegalStateException("There was a problem with the schema supplied for validation. Message:" + e1.getMessage());
+        }
+        Validator validator = schema.newValidator();
+        try {
+            validator.validate(new StreamSource(new StringReader(gpx)));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private double sumDistances(InstructionList il) {
+        double val = 0;
+        for (Instruction i : il) {
+            val += i.getDistance();
+        }
+        return val;
+    }
+
+    @Test
+    public void testCalcAzimuthAndGetDirection() {
+        PointList pl = new PointList();
+        pl.add(49.942, 11.584);
+
+        PointList nextPl = new PointList();
+        nextPl.add(49.942, 11.582);
+        Instruction currI = new Instruction(Instruction.CONTINUE_ON_STREET, "temp", pl);
+        Instruction nextI = new Instruction(Instruction.CONTINUE_ON_STREET, "next", nextPl);
+
+        assertEquals(270, GpxConversions.calcAzimuth(currI, nextI), .1);
+        assertEquals("W", GpxConversions.calcDirection(currI, nextI));
+
+        PointList p2 = new PointList();
+        p2.add(49.942, 11.580);
+        p2.add(49.944, 11.582);
+        Instruction i2 = new Instruction(Instruction.CONTINUE_ON_STREET, "temp", p2);
+
+        assertEquals(32.76, GpxConversions.calcAzimuth(i2, null), .1);
+        assertEquals("NE", GpxConversions.calcDirection(i2, null));
+
+        PointList p3 = new PointList();
+        p3.add(49.942, 11.580);
+        p3.add(49.944, 11.580);
+        Instruction i3 = new Instruction(Instruction.CONTINUE_ON_STREET, "temp", p3);
+
+        assertEquals(0, GpxConversions.calcAzimuth(i3, null), .1);
+        assertEquals("N", GpxConversions.calcDirection(i3, null));
+
+        PointList p4 = new PointList();
+        p4.add(49.940, 11.580);
+        p4.add(49.920, 11.586);
+        Instruction i4 = new Instruction(Instruction.CONTINUE_ON_STREET, "temp", p4);
+
+        assertEquals("S", GpxConversions.calcDirection(i4, null));
+
+        PointList p5 = new PointList();
+        p5.add(49.940, 11.580);
+        Instruction i5 = new Instruction(Instruction.CONTINUE_ON_STREET, "temp", p5);
+
+        assertTrue(Double.isNaN(GpxConversions.calcAzimuth(i5, null)));
+        assertEquals("", GpxConversions.calcDirection(i5, null));
+    }
 
 }
