@@ -58,7 +58,7 @@ jobs:
           .github/workflows/scripts/download-pit-scores.sh \
           "${{ github.workflow }}" \
           "${{ github.ref_name }}" \
-          5
+          
 
       - name: Build all modules
         run: mvn -B clean install -DskipTests -Djacoco.skip=true
