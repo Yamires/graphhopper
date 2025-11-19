@@ -3,7 +3,6 @@ set -e
 
 MODULES="${1:-}"
 EXCLUDED_MODULES="${EXCLUDED_MODULES:-core|reader-gtfs}"
-
 if [ -z "$MODULES" ]; then
   echo "No specific modules provided. Running full build."
   MODULES=$(ls -d */pom.xml 2>/dev/null | cut -d'/' -f1 | \
