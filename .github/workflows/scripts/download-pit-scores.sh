@@ -26,7 +26,7 @@ gh run list \
   echo "Checking run #$run_id for artifacts..."
 
   if gh run download "$run_id" \
-    --name pit-scores-baseline-17 \
+    --name pit-scores-baseline \
     --dir . 2>/dev/null; then
     echo "Successfully downloaded scores from run #$run_id"
     DOWNLOADED=true

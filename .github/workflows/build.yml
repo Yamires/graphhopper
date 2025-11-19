@@ -138,7 +138,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pit-scores-baseline-${{ matrix.java-version }}
+          name: pit-scores-baseline
           path: pit-score-*.txt
           if-no-files-found: ignore
           retention-days: 90
