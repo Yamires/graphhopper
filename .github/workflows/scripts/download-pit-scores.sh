@@ -20,11 +20,7 @@ gh run list \
   --status=success \
   --limit="$LIMIT" \
   --json databaseId \
-  --jq '.[].databaseId' | while read -r run_id; do
-
-  if [ "$DOWNLOADED" = "true" ]; then
-    break
-  fi
+  --jq '.[].databaseId' | do
 
   echo "Checking run #$run_id for artifacts..."
 
@@ -38,7 +34,7 @@ gh run list \
 done
 
 if [ "$DOWNLOADED" = "false" ]; then
-  echo "No previous scores found (this is normal for the first run)"
+  echo "No previous scores found"
 fi
 
 echo ""

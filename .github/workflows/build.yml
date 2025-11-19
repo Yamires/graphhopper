@@ -75,7 +75,7 @@ jobs:
       - name: Compute module list
         id: modules
         run: |
-          MODULES=$(.github/workflows/scripts/get-delta.sh "${{ steps.changed.outputs.all_changed_files }}") \
+          MODULES=$(.github/workflows/scripts/get-delta.sh "$(echo "${{ steps.changed.outputs.all_changed_files }}" | tr ' ' '\n')")
           echo "modules=$MODULES" >> $GITHUB_OUTPUT
 
       - name: Run PIT mutation testing
@@ -94,7 +94,7 @@ jobs:
         if: failure() && steps.mutation-check.outcome == 'failure'
         run: .github/workflows/scripts/rickroll.sh mutation
 
-      - name: 🎵 Rickroll Summary on Mutation Regression 🎵
+      - name: Rickroll Summary on Mutation Regression
         if: failure() && steps.mutation-check.outcome == 'failure'
         run: |
           {
@@ -113,8 +113,8 @@ jobs:
         if: failure() && steps.pit-test.outcome == 'failure'
         run: .github/workflows/scripts/rickroll.sh test
 
-      - name: 🎵 Rickroll Summary on Mutation Regression 🎵
-        if: failure() && steps.mutation-check.outcome == 'failure'
+      - name: Rickroll Summary on Mutation Regression
+        if: failure() && steps.pit-test.outcome == 'failure'
         run: |
           {
             echo "#  TEST FAILED - YOU GOT RICKROLLED! "

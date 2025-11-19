@@ -40,26 +40,26 @@ public class GHRequestTest {
         assertEquals(1, instance.getHints().getDouble("something", 2d), 1e1);
     }
 
-//    @Test
-//    public void testCorrectInit() {
-//        double lat0 = 51, lon0 = 1, lat1 = 52, lon1 = 2, lat2 = 53, lon2 = 3;
-//
-//        ArrayList<GHPoint> points = new ArrayList<>(3);
-//        points.add(new GHPoint(lat0, lon0));
-//        points.add(new GHPoint(lat1, lon1));
-//        points.add(new GHPoint(lat2, lon2));
-//        GHRequest instance;
-//
-//        instance = new GHRequest(points);
-//        comparePoints(instance, points);
-//        assertTrue(instance.getHeadings().isEmpty());
-//
-//        instance = new GHRequest(points.get(0), points.get(1));
-//        comparePoints(instance, points.subList(0, 2));
-//
-//        instance = new GHRequest(lat0, lon0, lat1, lon1);
-//        comparePoints(instance, points.subList(0, 2));
-//    }
+    @Test
+    public void testCorrectInit() {
+        double lat0 = 51, lon0 = 1, lat1 = 52, lon1 = 2, lat2 = 53, lon2 = 3;
+
+        ArrayList<GHPoint> points = new ArrayList<>(3);
+        points.add(new GHPoint(lat0, lon0));
+        points.add(new GHPoint(lat1, lon1));
+        points.add(new GHPoint(lat2, lon2));
+        GHRequest instance;
+
+        instance = new GHRequest(points);
+        comparePoints(instance, points);
+        assertTrue(instance.getHeadings().isEmpty());
+
+        instance = new GHRequest(points.get(0), points.get(1));
+        comparePoints(instance, points.subList(0, 2));
+
+        instance = new GHRequest(lat0, lon0, lat1, lon1);
+        comparePoints(instance, points.subList(0, 2));
+    }
 
     private void comparePoints(GHRequest request, List<GHPoint> points) {
         assertEquals(points, request.getPoints(), "Points do not match");

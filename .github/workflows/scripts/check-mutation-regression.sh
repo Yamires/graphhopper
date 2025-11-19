@@ -16,7 +16,7 @@ cat > "$report_file" << EOF
 EOF
 
 for file in $(find . -name "mutations.xml" | sort); do
-  module=$(echo "$file" | sed 's|^\./||' | cut -d'/' -f1)
+  module=$(echo "$file" | sed 's|/target.*||' | sed 's|^\./||')
 
   # Vérification de la validité du fichier XML
   if ! xmllint --noout "$file" 2>/dev/null; then
