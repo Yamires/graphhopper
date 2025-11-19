@@ -78,9 +78,6 @@ jobs:
           MODULES=$(.github/workflows/scripts/get-delta.sh "${{ steps.changed.outputs.all_changed_files }}") \
           echo "modules=$MODULES" >> $GITHUB_OUTPUT
 
-      - name: Clean all target directories
-        run: find . -type d -name target -exec rm -rf {} +
-
       - name: Run PIT mutation testing
         id: pit-test
         env:
