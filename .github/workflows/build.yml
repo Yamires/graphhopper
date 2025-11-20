@@ -58,32 +58,16 @@ jobs:
           .github/workflows/scripts/download-pit-scores.sh \
           "${{ github.workflow }}" \
           "${{ github.ref_name }}" \
-          
 
       - name: Build all modules
         run: mvn -B clean install -DskipTests -Djacoco.skip=true
-
-      # Détection des modules Maven modifiés
-      - name: Detect changed Maven modules
-        id: changed
-        uses: tj-actions/changed-files@v44
-        with:
-          files: |
-            **/pom.xml
-            **/src/**
-
-      - name: Compute module list
-        id: modules
-        run: |
-          MODULES=$(.github/workflows/scripts/get-delta.sh "${{ steps.changed.outputs.all_changed_files }}") 
-          echo "modules=$MODULES" >> $GITHUB_OUTPUT
 
       - name: Run PIT mutation testing
         id: pit-test
         env:
           EXCLUDED_MODULES: "core|reader-gtfs"
         run: |
-          echo "Modules to test: [$MODULES]"
+          echo "ALL MODULE ARE BEING TEST, EXCLUDING CORE AND READER_GTFS"
           .github/workflows/scripts/run-pit-test.sh 
 
         # "${{ steps.modules.outputs.modules }}"
@@ -93,38 +77,30 @@ jobs:
         id: mutation-check
         run: .github/workflows/scripts/check-mutation-regression.sh
 
-      - name: Rickroll Summary on Mutation Regression
+      - name: Rickroll (Mutation Regression)
         if: failure() && steps.mutation-check.outcome == 'failure'
         run: .github/workflows/scripts/rickroll.sh mutation
 
-      - name: Rickroll Summary on Mutation Regression
-        if: failure() && steps.mutation-check.outcome == 'failure'
-        run: |
-          {
-            echo "# MUTATION REGRESSION - YOU GOT RICKROLLED! "
-            echo ""
-            echo "![Rickroll](https://media.giphy.com/media/Vuw9m5wXviFIQ/giphy.gif)"
-            echo ""
-            echo "## Mutation Coverage Regression Detected!"
-            echo "### Never gonna give you up"
-            echo "### Never gonna let you down"
-            echo "### Never gonna run around and desert you"
-            echo "### Never gonna let those mutants survive"
-          } >> $GITHUB_STEP_SUMMARY
-
-      - name: Rickroll Test Failure
+      - name: Rickroll (Test Failure)
         if: failure() && steps.pit-test.outcome == 'failure'
+        run: .github/workflows/scripts/rickroll.sh test
+
+      - name: Rickroll Summary
+        if: failure()
         run: |
           {
-            echo "#  TEST FAILED - YOU GOT RICKROLLED! "
+            echo "# YOU GOT RICKROLLED!"
             echo ""
             echo "![Rickroll](https://media.giphy.com/media/Vuw9m5wXviFIQ/giphy.gif)"
             echo ""
-            echo "## Some test didn't pass!"
-            echo ""
-            echo "### Never gonna give you up"
-            echo "### Never gonna let you down"
-            echo "### Never gonna run around and desert you"
+
+            if [ "${{ steps.mutation-check.outcome }}" = "failure" ]; then
+              echo "## Mutation Coverage Regression Detected!"
+              echo "Never gonna let those mutants survive!"
+            elif [ "${{ steps.pit-test.outcome }}" = "failure" ]; then
+              echo "## Test Failure Detected!"
+              echo "Never gonna let your tests run around and desert you!"
+            fi
           } >> $GITHUB_STEP_SUMMARY
 
       # Upload des scores comme artifact (baseline pour le prochain run)
