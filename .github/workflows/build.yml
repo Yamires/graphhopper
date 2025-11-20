@@ -60,7 +60,7 @@ jobs:
           "${{ github.ref_name }}" \
 
       - name: Build all modules
-        run: mvn -B clean install -DskipTests -Djacoco.skip=true
+        run: mvn -B clean install -Djacoco.skip=false
 
       - name: Run PIT mutation testing
         id: pit-test

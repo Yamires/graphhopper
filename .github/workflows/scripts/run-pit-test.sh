@@ -1,22 +1,23 @@
 #!/bin/bash
 set -e
 
-MODULES="${1:-}"
 EXCLUDED_MODULES="${EXCLUDED_MODULES:-core|reader-gtfs}"
-if [ -z "$MODULES" ]; then
-  echo "No specific modules provided. Running full build."
-  MODULES=$(ls -d */pom.xml 2>/dev/null | cut -d'/' -f1 | \
-    grep -Ev "^($EXCLUDED_MODULES)$" | tr '\n' ',' | sed 's/,$//')
-  echo "Running PIT on all testable modules: $MODULES"
-else
-  echo "Running PIT on selected modules: $MODULES"
-fi
+
+echo "No specific modules provided. Running PIT on all modules..."
+
+# Récupère la liste des modules Maven à la racine
+MODULES=$(ls -d */pom.xml 2>/dev/null \
+  | cut -d'/' -f1 \
+  | grep -Ev "^($EXCLUDED_MODULES)$" \
+  | tr '\n' ',' \
+  | sed 's/,$//')
 
 if [ -z "$MODULES" ]; then
   echo "No modules to test. Exiting."
   exit 0
 fi
 
+echo "Running PIT on modules: $MODULES"
 echo "Starting PIT mutation testing..."
 
 mvn -B org.pitest:pitest-maven:mutationCoverage \

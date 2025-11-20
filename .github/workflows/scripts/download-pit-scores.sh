@@ -35,7 +35,7 @@ gh run list \
 done
 
 if [ "$DOWNLOADED" = "false" ]; then
-  echo "No previous scores found (this is normal for the first run)"
+  echo "No previous scores found"
 fi
 
 echo ""
@@ -44,5 +44,5 @@ if ls pit-score-*.txt 1> /dev/null 2>&1; then
   echo "Found previous scores:"
   ls -la pit-score-*.txt
 else
-  echo "No previous scores (baseline will be set)"
+  echo "No previous scores"
 fi

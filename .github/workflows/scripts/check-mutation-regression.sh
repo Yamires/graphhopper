@@ -64,7 +64,7 @@ for file in $(find . -name "mutations.xml" | sort); do
     echo "| $module | ${coverage}% | ${old}% | ${diff}% | $status |" >> "$report_file"
   else
     echo "   (No previous score - baseline set)"
-    echo "| $module | ${coverage}% | - | - | 🆕 New baseline |" >> "$report_file"
+    echo "| $module | ${coverage}% | - | - | New baseline |" >> "$report_file"
   fi
 
   # Sauvegarde du nouveau score
