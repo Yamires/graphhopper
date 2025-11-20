@@ -79,12 +79,12 @@ jobs:
 
       - name: Rickroll Test Failure
         if: failure() && steps.pit-test.outcome == 'failure'
-        uses: .github/workflows/actions/actions.yml
+        uses: ./.github/workflows/actions/Rickroll
         with:
           mode: "mutation"
       - name: Rickroll Test Failure
         if: failure() && steps.pit-test.outcome == 'failure'
-        uses: .github/workflows/actions/actions.yml
+        uses: ./.github/workflows/actions/Rickroll
         with:
           mode: "test"
 

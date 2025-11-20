@@ -188,3 +188,16 @@ L’importance de ce test est en sa capacité à **détecter des erreurs de pars
 Cette stratégie permet donc de tester de manière **dynamique et répétable** la méthode sur un large éventail de données possibles, ce qui est beaucoup plus efficace que de coder manuellement chaque scénario. Elle garantit que la méthode reste fiable même lorsque les valeurs d’entrée changent, ce qui est crucial pour tout système qui doit traiter des données variées provenant de différentes sources.
 
 En résumé, le test `testRandomBearingsWithFaker()` valide que la méthode gère correctement des entrées multiples, aléatoires et variées, tout en assurant que le comportement attendu, l’extraction correcte du premier angle, est toujours respecté.
+
+
+critère	description
+Github action (GA) (25%)	l'action échoue si le score de mutation est plus bas que sur la dernière exécution de l'action
+documentation GA (25%)	les modifications apportées à l'action ainsi que la validation des modifications sont documentées et justifiées;
+mocks (20%)	2 classes sont simulées avec des mocks et les tests sont adaptés pour utiliser ces mocks
+documentation mocks (20%)	le choix des classes, la définition des mocks, les changements dans les tests sont documentés et justifiés
+humour (10%)	rickroll dans le CI
+
+
+Conception: 
+
+L'objectif est de créer une action dans Github actions qui fait échouer le build lorsque le score de mutation 
