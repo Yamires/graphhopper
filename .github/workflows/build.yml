@@ -77,13 +77,16 @@ jobs:
         id: mutation-check
         run: .github/workflows/scripts/check-mutation-regression.sh
 
-      - name: Rickroll (Mutation Regression)
-        if: failure() && steps.mutation-check.outcome == 'failure'
-        run: .github/workflows/scripts/rickroll.sh mutation
-
-      - name: Rickroll (Test Failure)
+      - name: Rickroll Test Failure
         if: failure() && steps.pit-test.outcome == 'failure'
-        run: .github/workflows/scripts/rickroll.sh test
+        uses: .github/workflows/actions/actions.yml
+        with:
+          mode: "mutation"
+      - name: Rickroll Test Failure
+        if: failure() && steps.pit-test.outcome == 'failure'
+        uses: .github/workflows/actions/actions.yml
+        with:
+          mode: "test"
 
       - name: Rickroll Summary
         if: failure()

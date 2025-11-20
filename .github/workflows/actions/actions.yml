@@ -1,0 +1,5 @@
+name: "GraphHopper Rickroll"
+description: "Rickroll when tests fail"
+runs:
+  using: "docker"
+  image: "Dockerfile"
