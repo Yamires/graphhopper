@@ -198,6 +198,59 @@ documentation mocks (20%)	le choix des classes, la définition des mocks, les ch
 humour (10%)	rickroll dans le CI
 
 
-Conception: 
+## Conception des Github Actions
 
-L'objectif est de créer une action dans Github actions qui fait échouer le build lorsque le score de mutation 
+L’objectif du projet est de mettre en place, au sein de GitHub Actions, un mécanisme automatique capable de faire échouer un build dès qu’une régression du score de mutation est détectée. Pour y parvenir, plusieurs éléments sont nécessaires : un score de mutation de référence (issu du build précédent), le score de mutation obtenu lors du build courant, et une méthode fiable permettant de comparer ces deux valeurs.
+
+Nous avons choisi de récupérer, pour chaque module testable du projet, le score de mutation global. Une approche plus fine, par exemple récupérer un score de mutation pour chaque classe, aurait été possible, mais elle alourdirait considérablement la suite du pipeline et complexifierait l’analyse. À l’inverse, une approche moins granulaire consistant à calculer un score global unique pour l’ensemble de GraphHopper fournirait trop peu d’informations en cas d’échec du build, rendant le diagnostic difficile pour l’utilisateur.
+Ainsi, la granularité par module représente un bon compromis : elle reste suffisamment simple à implémenter tout en offrant une information pertinente et exploitable lorsque le build échoue.
+
+Le flux d'exécution du workflows est le suivant: 
+### 1 Récupération des scores de mutation du build précédent
+[lien vers l'action]
+Avant d'exécuter les tests de mutations sur le build courant, le workflow tente de récupérer les scores de mutations des builds précédents. 
+Le script `download-pit-scores.sh` [lien vers le script] effectue les actions suivantes:
+1- Le script interroge GitHub pour récupérer les runs précédents
+\```bash
+gh run list \
+  --workflow="$WORKFLOW" \
+  --branch="$BRANCH" \
+  --status=success \
+  --limit="$LIMIT"
+\```
+2- Pour chaque run trouvé, on télécharge l'artificat **pit-scores-baselines**. Lorsqu'un artifact est trouvé, il est téléchargé dans le répertoire courant. Le script s'arrêt dès qu'il trouve un run contenant les scores. 
+3- Deux cas sont possibles 
+    1- Des scores ont été trouvés: On a une baseline pour comparaison.
+    2- Aucun score trouvé: C'est le premier run, on set la baseline pour le prochain build. 
+
+### 2 Exécution des tests de mutation sur le build courant
+lien vers l'action
+Après la compilation et l'exécution des tests unitaires, le workflow lance les tests de mutation avec **PITEST**. Le script `run-pit-test.sh` contient la logique d'execution. 
+Il y a 2 points importants dans la logique d'exécution. 
+1- Les modules CORE et READER-GTFS sont exclus. Les tests de mutations n'achèvent jamais, possiblement à cause de boucles infinis. 
+2- Les paramètres `-DreportsDirectory=target/pit-reports -DoutputFormats=XML,HTML` permettent de générer un rapport dans les répertoires `target/pit-reports/mutations.xml`et `target/pit-reports/index.html`. `mutations.xml`sera nécessaire pour évaluer la régression des scores de mutations. 
+
+### 3 Verification de la régression de mutation
+lien vers l'action
+Le script `check-mutation-regression.sh` effectue les actions suivantes: 
+1- Récupère pour chaque module testé, un fichier `mutations.xml`
+2- Calcule le score de mutation par module **(coverage = (mutations tués / mutants totaux) x 100)**
+3- Pour chaque module, le score courant est comparé au score précédent sauvegardé dans `pit-score-<module>.txt`.
+4- Un statut est attribué selon 3 cas, **Improved**, **Unchanged** ou **Regression**
+5- En cas de **Regression**, `failed=true`.
+6- Les scores sont ajoutés dans un rapport `mutation-report.md`
+7- Les scores de références sont mises-à-jour et enregistrés dans `pit-score-<module>.txt`
+8- Si `failed=true`, l'action échoue automatiquement si au moins un module a vu son score baisser.  
+
+### 4 Enregistrement et archivage des scores et rapport
+Que le build soit un succès ou un échec, les données sont sauvegardés sous forme d'artifacts. 
+1. lien vers Upload PIT scores baseline: On sauvegarde **toujours** tous les fichiers `pit-score-*.txt` et on le conserve 90 jours. 
+2. lien vers Upload PIT reports: On sauvegarde **toujours** tous les fichiers dans `*/target/pit-reports/` et conserve 30 jours. Cela inclut `mutations.xml` et `ìndex.html`
+3. lien vers archire test reports on failure: En cas **d'échec**, On sauvegarde tous les rapports Surefire et conserve 7 jours, pour faciliter le débogage. 
+
+
+## Validation des modifications
+Pour exécuter la validation, il est nécessaire de forcer une regression des scores de mutation. 
+Dans un premier temps, il faut établir un run avec des scores de validation qui seront les scores de référence, donc on fait simplement push le code snas aucune modification. 
+Dans un 2ième run, on va modifier le code sur des endroits que l'on sait que le score de mutation va descendre. Ces endroits ce sont les tests qu'on ajouté dans la tâche 2. On sait que l'ajout de ses tests fait augmenter le score de mutation, alors le retirer le fera descendre. 
+Dans une 3ieme run, on veut valider que la méthode fonction globalement, donc, on va éliminer des tests au hasard dans tous les modules et observer la variation des scores.

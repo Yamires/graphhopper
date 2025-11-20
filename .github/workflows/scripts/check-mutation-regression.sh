@@ -46,7 +46,7 @@ for file in $(find . -name "mutations.xml" | sort); do
 
     printf "   Previous: %.2f%% " "$old"
 
-    # Détermination du statut (sans tolérance)
+    # Détermination du statut
     if (( $(echo "$coverage > $old" | bc -l) )); then
       printf "(Improved: +%.2f%%)\n" "$diff"
       status="Improved"
