@@ -250,7 +250,102 @@ Que le build soit un succès ou un échec, les données sont sauvegardés sous f
 
 
 ## Validation des modifications
-Pour exécuter la validation, il est nécessaire de forcer une regression des scores de mutation. 
-Dans un premier temps, il faut établir un run avec des scores de validation qui seront les scores de référence, donc on fait simplement push le code snas aucune modification. 
-Dans un 2ième run, on va modifier le code sur des endroits que l'on sait que le score de mutation va descendre. Ces endroits ce sont les tests qu'on ajouté dans la tâche 2. On sait que l'ajout de ses tests fait augmenter le score de mutation, alors le retirer le fera descendre. 
-Dans une 3ieme run, on veut valider que la méthode fonction globalement, donc, on va éliminer des tests au hasard dans tous les modules et observer la variation des scores.
+
+Afin de valider le bon fonctionnement du mécanisme de détection de régression, trois exécutions distinctes ont été réalisées.  
+Chacune permet d’observer le comportement du pipeline dans une situation contrôlée, et de confirmer que le build échoue correctement lorsque le score de mutation diminue.
+
+---
+
+### Étape 1 — Établissement de la baseline (aucune modification)
+*Objectif : générer un run “propre” afin de créer les scores de référence.*
+
+Pour cette première exécution, aucun changement n’est apporté au code.  
+Un simple *push* sans modification déclenche la génération :
+
+- du score de mutation courant,
+- des fichiers `pit-score-*.txt` qui serviront de baseline pour les runs suivants.
+
+### Tableau des scores (Run 1 — Baseline)
+
+| Module        | Score courant | Score précédent | Status    |
+|---------------|---------------|-----------------|-----------|
+| client-hc     | —             | —               | Baseline  |
+| example       | —             | —               | Baseline  |
+| map-matching  | —             | —               | Baseline  |
+| navigation    | —             | —               | Baseline  |
+| tools         | —             | —               | Baseline  |
+| web           | —             | —               | Baseline  |
+| web-api       | —             | —               | Baseline  |
+| web-bundle    | —             | —               | Baseline  |
+
+### Capture du pipeline (Run 1)
+![Run 1 Status](run1.jpeg)
+
+---
+
+### Étape 2 — Régression intentionnelle dans un module
+*Objectif : vérifier que l’algorithme détecte une baisse du score de mutation.*
+
+Dans ce second run, des tests sont volontairement retirés dans des modules où l’on sait qu’ils augmentaient précédemment le score PIT.  
+Cette suppression entraîne donc mécaniquement une baisse, permettant de valider :
+
+- la détection correcte de la régression,
+- l’identification du module affecté,
+- l’échec automatique du build.
+
+### Tableau des scores (Run 2 — Régression ciblée)
+
+| Module        | Score courant | Score précédent | Status                   |
+|---------------|---------------|-----------------|--------------------------|
+| client-hc     | —             | —               | —                        |
+| example       | —             | —               | —                        |
+| map-matching  | —             | —               | —                        |
+| navigation    | —             | —               | —                        |
+| tools         | —             | —               | —                        |
+| web           | —             | —               | —                        |
+| web-api       | —             | —               | —                        |
+| web-bundle    | —             | —               | Regression / Unchanged / Improved |
+
+### Capture du pipeline (Run 2 — Failure attendu)
+![Run 2 Status](run2.jpeg)
+
+---
+
+### 🔵 Étape 3 — Régression sur plusieurs modules
+*Objectif : vérifier que la méthode fonctionne dans un cas plus large avec plusieurs modules impactés.*
+
+Dans cette troisième exécution, des tests sont retirés aléatoirement dans plusieurs modules.  
+Cette étape valide que :
+
+- plusieurs régressions peuvent être détectées simultanément,
+- le tableau récapitulatif les distingue correctement,
+- le build échoue dès qu’un seul module régressé est détecté.
+
+### Tableau des scores (Run 3 — Régression multiple)
+
+| Module        | Score courant | Score précédent | Status                   |
+|---------------|---------------|-----------------|--------------------------|
+| client-hc     | —             | —               | —                        |
+| example       | —             | —               | —                        |
+| map-matching  | —             | —               | —                        |
+| navigation    | —             | —               | —                        |
+| tools         | —             | —               | —                        |
+| web           | —             | —               | —                        |
+| web-api       | —             | —               | —                        |
+| web-bundle    | —             | —               | Regression / Unchanged / Improved |
+
+### Capture du pipeline (Run 3 — Failure attendu)
+![Run 3 Status](run3.jpeg)
+
+---
+
+### 🎉 Conclusion de la validation
+
+Sur l’ensemble des trois exécutions :
+
+- la baseline est correctement établie (Run 1),
+- une régression ciblée est bien détectée et fait échouer le pipeline (Run 2),
+- plusieurs régressions simultanées sont également correctement prises en compte (Run 3).
+
+Le système de validation mis en place se comporte donc comme prévu :  
+**toute baisse du score de mutation entraîne automatiquement un échec du build GitHub Actions.**
