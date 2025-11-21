@@ -311,7 +311,7 @@ Cette suppression entraîne donc mécaniquement une baisse, permettant de valide
 
 ---
 
-### 🔵 Étape 3 — Régression sur plusieurs modules
+### Étape 3 — Régression sur plusieurs modules
 *Objectif : vérifier que la méthode fonctionne dans un cas plus large avec plusieurs modules impactés.*
 
 Dans cette troisième exécution, des tests sont retirés aléatoirement dans plusieurs modules.  
@@ -339,7 +339,7 @@ Cette étape valide que :
 
 ---
 
-### 🎉 Conclusion de la validation
+### Conclusion de la validation
 
 Sur l’ensemble des trois exécutions :
 
